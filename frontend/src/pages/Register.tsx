@@ -7,10 +7,11 @@ import { useAuth } from '../hooks/useAuth';
 
 const Register: React.FC = () => {
     const [formData, setFormData] = useState({
-        name: '',
+        full_name: '',
         email: '',
         password: '',
-        confirmPassword: ''
+        confirmPassword: '',
+        role_name: 'Client'
     });
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
@@ -22,7 +23,7 @@ const Register: React.FC = () => {
         e.preventDefault();
         setError('');
 
-        if (!formData.name || !formData.email || !formData.password) {
+        if (!formData.full_name || !formData.email || !formData.password) {
             setError('Please fill in all fields');
             return;
         }
@@ -90,8 +91,8 @@ const Register: React.FC = () => {
                             />
                             <input
                                 type="text"
-                                value={formData.name}
-                                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                                value={formData.full_name}
+                                onChange={(e) => setFormData({ ...formData, full_name: e.target.value })}
                                 placeholder="John Doe"
                                 style={{
                                     width: '100%',

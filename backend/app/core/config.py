@@ -13,18 +13,29 @@ class Settings(BaseSettings):
     LOG_LEVEL: str = "INFO"
 
     # Database
-    DATABASE_URL: str = "postgresql://postgres:postgres@db:5432/worldpet"
+    DATABASE_URL: str = "postgresql://postgres:postgres@localhost:5433/worldpet"
 
     # Redis
     REDIS_URL: str = "redis://redis:6379/0"
 
     # Security
-    SECRET_KEY: str = "your-secret-key-here-change-in-prod"
+    SECRET_KEY: str = "your-secret-key"
     ALGORITHM: str = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
 
     class Config:
         case_sensitive = True
+
+    # CORS
+    ALLOWED_ORIGINS: list[str] = [
+        "http://localhost:3000",
+        "http://localhost:5173",
+        "http://localhost:8000",
+        "http://localhost:8080",
+    ]
+    ALLOWED_METHODS: list[str] = ["GET", "POST", "PUT", "DELETE", "OPTIONS"]
+    ALLOWED_HEADERS: list[str] = ["*"]
+    ALLOW_CREDENTIALS: bool = True
 
 
 settings = Settings()
