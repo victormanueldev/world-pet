@@ -9,7 +9,7 @@ description: "Playwright modern end-to-end testing framework with cross-browser 
 Playwright is a modern end-to-end testing framework that provides cross-browser automation with a built-in test runner, auto-wait mechanisms, and excellent developer experience.
 
 
-- **when_to_use**: When writing tests, implementing playwright-e2e-testing, or ensuring code quality.
+- **when_to_use**: When writing e2e tests, implementing playwright-e2e-testing, or ensuring code quality.
 - **quick_start**:
     1. Review the core concepts below. 
     2. Apply patterns to your use case. 
