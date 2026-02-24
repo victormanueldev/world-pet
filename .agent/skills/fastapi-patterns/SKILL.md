@@ -1,6 +1,6 @@
 ---
 name: fastapi-patterns
-description: Build production-grade FastAPI services following clean code, security best practices, and TDD principles. Use when implementing database client setup, service layer classes with CRUD operations, partition key strategies, parameterized queries, or TDD patterns for Cosmos. Triggers on phrases like "database client setup", "service layer classes", "security best practices", "api patterns", or "TDD patterns".
+description: Build production-grade FastAPI services following clean code, security best practices, and TDD principles. Use when implementing database client setup, service layer classes with CRUD operations, partition key strategies, parameterized queries, or TDD patterns for PostgreSQL. Triggers on phrases like "database client setup", "service layer classes", "security best practices", "api patterns", or "TDD patterns".
 package: fastapi
 ---
 

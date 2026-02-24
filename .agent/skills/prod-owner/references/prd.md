@@ -41,13 +41,10 @@
 ### 3.7 Administrator Tools
 - **Client & Pet Directory:** Searchable indexes of all registered users and their pets.
 - **Mass Communications:** Ability to send bulk SMS notifications for clinic news or general alerts.
-- **SMS Balance Management:** Integration with `hablame.co` API to check remaining credits and manage communication costs.
 - **Dashboard:** A central hub for admins to view upcoming appointments and recent activity.
 
 ## 5. Modernization Roadmap (AI-Ready)
 To facilitate future AI-led modernizations, the following areas should be prioritized:
-1.  **API Extraction:** Decouple the frontend from the backend by converting Blade controllers into a RESTful or GraphQL API.
-2.  **State Management:** Transition the hybrid Vue.js/Blade setup into a modern Single Page Application (SPA) using Vue 3 or React.
 3.  **Automated Scheduling:** Implement an AI-driven scheduling optimizer to minimize appointment gaps.
 4.  **Health Predictions:** Use historical vaccination and nutrition data to provide proactive pet health suggestions.
 5.  **Service Decoupling:** Move the SMS logic into a dedicated Notification Microservice.
