@@ -47,10 +47,6 @@ World Pet is a modern full-stack application featuring a premium, dark-themed Re
 - **Integration:** Backend and frontend JSON payloads **must** always be synchronized to avoid `422` errors. Always validate payloads with `curl` using the OpenAPI spec at `http://localhost:8000/openapi.json` before implementing frontend services.
 - **Documentation:** All code must be properly commented.
 
-### Feature Implementation
-- For new features, always follow the `implementation-plan.md` template located in `.agents/rules/`.
-- Use the `agent/feature/<feature-name>` branch naming convention for planned features.
-
 ### Agent Skills & Capabilities
 Leverage the following specialized skills available in `.agents/skills/`:
 - `fastapi-patterns`: Best practices for FastAPI services and CRUD operations.
@@ -68,6 +64,20 @@ Leverage the following specialized skills available in `.agents/skills/`:
 world-pet/
 ├── backend/            # FastAPI source, migrations, and tests
 ├── frontend/           # React TypeScript source and UI configuration
+├── .sdlc/
+  ├── context/                        # Persistent project context
+    ├── project-overview.md           # What the system does, tech stack, scope
+    ├── architecture.md               # Architecture decisions and patterns
+    ├── conventions.md                # Naming, structure, coding standards
+  ├── templates/                      # Reusable artifact templates
+    ├── requirement-template.md
+    ├── task-template.md
+  ├── specs/                          # Per-feature specifications
+    ├── REQ-*/
+      ├── requirement.md              # The spec
+      ├── tasks/
+        ├── TASK-*/
+  ├── knowledge/              # Accumulated project knowledge & answered questions
 ├── .agents/            # Agent-specific rules and skills
 │   ├── rules/          # Coding standards and workflow guides
 │   └── skills/         # Specialized capability documentation
