@@ -1,50 +1,510 @@
-# Product Requirements Document (PRD): World Pet App
+Below is a **concise, AI-friendly PRD for an MVP** using **Spec Driven Development (SDD)**. It is structured to be **clear for AI agents**, **minimize tokens**, and **support incremental code generation**.
 
-## 1. Executive Summary
-**World Pet** is a comprehensive pet management platform designed for veterinary clinics and pet service providers. It facilitates the relationship between pet owners and the clinic by providing tools for health tracking, appointment scheduling, and automated reminders via SMS.
+---
 
-## 2. Target Audience
-- **Pet Owners (End Users):** Individuals who want to track their pet's health, appointments, and nutrition.
-- **Clinic Administrators (Admins):** Staff responsible for managing appointments, grooming services, client data, and outgoing communications.
+# PRD — World Pet MVP
 
-## 3. Functional Features
+## 1. Product Overview
 
-### 3.1 User Management & Authentication
-- **User Roles:** Distinct roles for "Clients" and "Administrators."
-- **Authentication:** Standard secure login, registration, and password recovery.
-- **Profile Management:** Users can update their personal information (contact details, address, photo).
+**World Pet** is a pet management platform for veterinary clinics and pet owners.
 
-### 3.2 Pet Management (Mascotas)
-- **Pet Profiles:** Detailed records for each pet, including name, species, breed, sex, photo, birth date, weight, and sterilization status.
-- **Multiple Pets:** Users can manage multiple pets under a single account.
+The MVP enables:
 
-### 3.3 Medical Services (Citas)
-- **Appointment Booking:** Users can request medical appointments, specifying reasons and preferred dates/times.
-- **Symptom Tracking:** Recording initial symptoms or reasons for the visit.
-- **Admin Validation:** Administrators can review, confirm, and update the status of medical appointments.
+* Pet owners to manage pets and request appointments
+* Clinics to manage clients, pets, and appointments
+* Automated reminders for vaccines and food purchases
 
-### 3.4 Grooming Services (Peluquería)
-- **Service Scheduling:** Booking grooming sessions with specific hair styles or service types.
-- **Status Tracking:** Monitoring the progress of grooming services (e.g., pending, completed).
-- **Pricing:** Management of service costs within the grooming module.
+The system consists of:
 
-### 3.5 Nutrition & Feeding (Alimentación)
-- **Nutrition Logs:** Tracking the type of food, brand, and quantity consumed by pets.
-- **Purchase Tracking:** Recording the last purchase date and calculating the next recommended purchase based on frequency.
-- **Automated Reminders:** SMS notifications sent to users when it's time to restock food.
+* **Client Web - Mobile Responsive**
+* **Admin Web Backoffice**
+* **Backend API**
+* **Notification Service (SMS abstraction)**
 
-### 3.6 Vaccination Module (Vacunas)
-- **Vaccination History:** Records of all vaccines applied to a pet.
-- **Vaccine Database:** A reference table of common vaccines and their application frequencies.
-- **Application Tracking:** Logging specific application dates and upcoming boosters.
+---
 
-### 3.7 Administrator Tools
-- **Client & Pet Directory:** Searchable indexes of all registered users and their pets.
-- **Mass Communications:** Ability to send bulk SMS notifications for clinic news or general alerts.
-- **Dashboard:** A central hub for admins to view upcoming appointments and recent activity.
+# 2. Goals
 
-## 5. Modernization Roadmap (AI-Ready)
-To facilitate future AI-led modernizations, the following areas should be prioritized:
-3.  **Automated Scheduling:** Implement an AI-driven scheduling optimizer to minimize appointment gaps.
-4.  **Health Predictions:** Use historical vaccination and nutrition data to provide proactive pet health suggestions.
-5.  **Service Decoupling:** Move the SMS logic into a dedicated Notification Microservice.
+### Business Goals
+
+* Digitize veterinary clinic operations
+* Improve client communication
+* Track pet health history
+
+### MVP Success Metrics
+
+| Metric                    | Target   |
+| ------------------------- | -------- |
+| Registered clients        | >50      |
+| Pets registered           | >100     |
+| Appointments booked       | >20/week |
+| Reminder delivery success | >95%     |
+
+---
+
+# 3. User Roles
+
+## Client
+
+Pet owner using the app.
+
+Capabilities:
+
+* Manage pets
+* Book appointments
+* Track pet health
+* Receive reminders
+
+## Administrator
+
+Clinic staff managing operations.
+
+Capabilities:
+
+* Manage clients
+* Manage pets
+* Manage appointments
+* Manage vaccines
+* Send notifications
+
+---
+
+# 4. Core Entities (Data Model)
+
+### User
+
+```
+id
+role (client|admin)
+name
+email
+phone
+password_hash
+created_at
+```
+
+### Pet
+
+```
+id
+owner_id
+name
+species
+breed
+sex
+birth_date
+weight
+sterilized
+photo_url
+created_at
+```
+
+### Appointment
+
+```
+id
+pet_id
+owner_id
+type (medical|grooming)
+reason
+status (requested|confirmed|completed|cancelled)
+scheduled_at
+created_at
+```
+
+### GroomingService
+
+```
+id
+name
+description
+price
+duration_minutes
+```
+
+### NutritionLog
+
+```
+id
+pet_id
+food_brand
+food_type
+quantity
+last_purchase_date
+purchase_frequency_days
+```
+
+### Vaccine
+
+```
+id
+name
+description
+frequency_days
+```
+
+### VaccineApplication
+
+```
+id
+pet_id
+vaccine_id
+applied_at
+next_due_date
+```
+
+### Notification
+
+```
+id
+user_id
+type (sms)
+content
+status (pending|sent|failed)
+sent_at
+```
+
+---
+
+# 5. Functional Requirements
+
+## 5.1 Authentication
+
+### Client
+
+* Register account
+* Login
+* Reset password
+* Update profile
+
+### Admin
+
+* Login
+* Manage profile
+
+---
+
+## 5.2 Pet Management
+
+Client can:
+
+* Create pet
+* Edit pet
+* View pets
+* Delete pet
+
+Pet profile shows:
+
+* basic info
+* vaccination history
+* appointments
+* nutrition logs
+
+---
+
+## 5.3 Appointment Scheduling
+
+Client can:
+
+* request appointment
+* select pet
+* select type (medical/grooming)
+* provide reason
+
+Admin can:
+
+* view appointment list
+* filter by date/status
+* confirm appointment
+* reschedule appointment
+* cancel appointment
+* mark completed
+
+---
+
+## 5.4 Grooming Services
+
+Admin can:
+
+* create grooming services
+* edit grooming services
+* delete grooming services
+
+Client can:
+
+* request grooming appointment
+
+---
+
+## 5.5 Vaccination Module
+
+Admin can:
+
+* manage vaccine catalog
+
+Admin can record:
+
+* vaccine applied to pet
+
+System automatically calculates:
+
+```
+next_due_date = applied_at + frequency_days
+```
+
+Client can:
+
+* view vaccination history
+
+---
+
+## 5.6 Nutrition Tracking
+
+Client can:
+
+* log pet food
+* update purchase date
+* update purchase frequency
+
+System calculates:
+
+```
+next_purchase = last_purchase_date + purchase_frequency_days
+```
+
+---
+
+## 5.7 Notifications
+
+System sends SMS for:
+
+### Vaccine Reminder
+
+```
+if today >= next_due_date - 3 days
+```
+
+### Food Reminder
+
+```
+if today >= next_purchase
+```
+
+### Appointment Reminder
+
+```
+24h before scheduled_at
+```
+
+Notification sending is abstracted via:
+
+```
+NotificationService.sendSMS(phone, message)
+```
+
+---
+
+# 6. Admin Backoffice Pages
+
+### Dashboard
+
+Displays:
+
+* appointments today
+* upcoming vaccines
+* upcoming food reminders
+* total clients
+* total pets
+
+---
+
+### Clients
+
+Admin can:
+
+* search clients
+* view client profile
+* view pets of client
+
+---
+
+### Pets
+
+Admin can:
+
+* search pets
+* view pet profile
+* view vaccine history
+* view appointments
+
+---
+
+### Appointments
+
+Admin can:
+
+* filter by date/status
+* confirm appointments
+* cancel appointments
+* mark completed
+
+---
+
+### Vaccines
+
+Admin can:
+
+* create vaccine
+* edit vaccine
+* delete vaccine
+
+---
+
+### Grooming Services
+
+Admin can:
+
+* create service
+* edit service
+* delete service
+
+---
+
+# 7. Client App Pages
+
+### Authentication
+
+* login
+* register
+* reset password
+
+---
+
+### Home
+
+Shows:
+
+* pets
+* upcoming appointments
+* vaccine reminders
+* food reminders
+
+---
+
+### Pets
+
+* list pets
+* create pet
+* edit pet
+* view pet details
+
+---
+
+### Appointments
+
+* request appointment
+* view upcoming appointments
+* view past appointments
+
+---
+
+### Vaccines
+
+* vaccination history
+
+---
+
+### Nutrition
+
+* log food purchase
+* update frequency
+
+---
+
+### Profile
+
+* view profile
+* edit profile
+
+---
+
+# 8. Non-Functional Requirements
+
+### Security
+
+* JWT authentication
+* password hashing (bcrypt)
+
+### Performance
+
+* API response < 500ms
+
+### Scalability
+
+* stateless backend
+* notification service isolated
+
+### Reliability
+
+* retry failed SMS notifications
+
+---
+
+# 9. API Principles
+
+* RESTful endpoints
+* JSON payloads
+* versioned API `/v1`
+
+Example:
+
+```
+POST /v1/pets
+GET /v1/pets/{id}
+POST /v1/appointments
+GET /v1/appointments
+```
+
+---
+
+# 10. Suggested Tech Stack (AI Friendly)
+
+Backend
+
+```
+Python
+FastAPI
+PostgreSQL
+SQLAlchemy
+```
+
+Frontend
+
+```
+Next.js
+React
+Tailwind
+```
+
+Auth
+
+```
+JWT
+OAuth (Google)
+```
+
+Infra
+
+```
+Docker
+```
+---
+
+# 11. Future AI Roadmap
+
+### AI Features (post-MVP)
+
+* Pet health prediction
+* Smart appointment scheduling
+* Nutrition recommendations
+* Chatbot veterinary assistant

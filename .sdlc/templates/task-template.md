@@ -1,6 +1,6 @@
 ---
-id: TASK-ID
-requirement_id: REQ-ID
+id: TASK-ID-task-name
+requirement_id: REQ-ID-feature-name
 title: Task Title
 status: pending
 ---

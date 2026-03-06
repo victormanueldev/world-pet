@@ -17,3 +17,22 @@
 * Make sure all the code is properly commented
 * Use ruff and mypy to check code style and follow their recommended configuration.
 
+# AI-Driven Development Constraints
+
+AI agents must:
+
+* implement **entities first**
+* then **REST API**
+* then **admin dashboard**
+* then **client UI**
+
+Development order:
+
+```
+1. database schema
+2. backend API
+3. auth
+4. admin dashboard
+5. client app
+6. notifications
+```
