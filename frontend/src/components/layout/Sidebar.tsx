@@ -15,8 +15,10 @@ import {
     Apple,
     Syringe,
     Settings,
+    Users,
     type LucideIcon,
 } from "lucide-react";
+import { TenantSwitcher } from "../tenant/TenantSwitcher";
 
 // ----- Nav items -----------------------------------------------------------
 
@@ -33,6 +35,7 @@ const NAV_ITEMS: NavItem[] = [
     { label: "Peluquería", to: "/grooming", icon: Scissors },
     { label: "Alimentación", to: "/nutrition", icon: Apple },
     { label: "Vacunas", to: "/vaccines", icon: Syringe },
+    { label: "Usuarios", to: "/admin/users", icon: Users },
     { label: "Configuración", to: "/settings", icon: Settings },
 ];
 
@@ -42,13 +45,18 @@ export function Sidebar() {
     return (
         <aside className="glass-panel flex flex-col w-64 min-h-screen p-4">
             {/* Logo / branding */}
-            <div className="flex items-center gap-3 px-2 py-4 mb-6">
+            <div className="flex items-center gap-3 px-2 py-4 mb-4">
                 <div className="w-9 h-9 rounded-lg bg-brand flex items-center justify-center shadow-glow">
                     <PawPrint size={18} className="text-white" />
                 </div>
                 <span className="text-lg font-semibold text-white tracking-tight">
                     World Pet
                 </span>
+            </div>
+
+            {/* Tenant Switcher */}
+            <div className="px-2 mb-4">
+                <TenantSwitcher />
             </div>
 
             {/* Navigation links */}

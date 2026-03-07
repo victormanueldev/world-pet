@@ -18,6 +18,7 @@ from app.db.session import Base
 
 # NOTE: Import all models here so that Base.metadata is populated.
 # Example: from app.models import user  # noqa: F401
+from app.models import Tenant, User, UserTenant  # noqa: F401
 
 # ---------------------------------------------------------------------------
 # Alembic Config object
