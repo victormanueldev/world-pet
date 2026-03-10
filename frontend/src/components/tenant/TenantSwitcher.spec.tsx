@@ -37,17 +37,26 @@ describe('TenantSwitcher', () => {
 });
 
 describe('TenantContext', () => {
-  it('provides default values', () => {
+  it('provides default values', async () => {
     const TestConsumer = () => {
-      const { currentTenant, tenants } = useTenant();
+      const { tenant, isLoading, error } = useTenant();
       
-      expect(currentTenant).toBeNull();
-      expect(tenants).toEqual([]);
+      // Note: isLoading may be true initially while auth provider initializes
+      // We just check that tenant is null and there's no error
+      expect(tenant).toBeNull();
+      expect(error).toBeNull();
       
       return null;
     };
 
-    render(
+    const { rerender } = render(
+      <TestWrapper>
+        <TestConsumer />
+      </TestWrapper>
+    );
+    
+    // Re-render after auth provider initializes
+    rerender(
       <TestWrapper>
         <TestConsumer />
       </TestWrapper>

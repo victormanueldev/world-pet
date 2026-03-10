@@ -2,31 +2,22 @@
  * TenantSwitcher
  *
  * Dropdown for switching between tenants the user has access to.
- * Integrates with auth context to show only accessible tenants.
+ * Integrates with tenant context to show current tenant and switch between tenants.
  */
 import { useState, useRef, useEffect } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Building2, ChevronDown } from 'lucide-react';
 import { useTenant } from '@/context/TenantContext';
 import { useAuth } from '@/hooks/useAuth';
 
 export function TenantSwitcher() {
-    const { currentTenant, setCurrentTenant, setTenants } = useTenant();
+    const { tenant } = useTenant();
     const { user, isAuthenticated } = useAuth();
+    const navigate = useNavigate();
+    const { slug } = useParams<{ slug: string }>();
     const [isOpen, setIsOpen] = useState(false);
     const menuRef = useRef<HTMLDivElement>(null);
-
-    // Sync tenants from auth user to tenant context
-    useEffect(() => {
-        if (user?.tenants && user.tenants.length > 0) {
-            setTenants(user.tenants);
-            // Auto-select first tenant if none selected
-            if (!currentTenant) {
-                const userTenant = user.tenants.find((t) => t.id === user.tenantId) || user.tenants[0];
-                setCurrentTenant(userTenant);
-            }
-        }
-    }, [user, currentTenant, setCurrentTenant, setTenants]);
 
     // Close menu when clicking outside
     useEffect(() => {
@@ -40,10 +31,19 @@ export function TenantSwitcher() {
         return () => document.removeEventListener('mousedown', handleClickOutside);
     }, []);
 
+    // Handle tenant switch - navigate to new tenant path
+    const handleTenantSwitch = (targetSlug: string) => {
+        setIsOpen(false);
+        navigate(`/${targetSlug}/`);
+    };
+
     // Don't render if not authenticated or user has no tenants
     if (!isAuthenticated || !user?.tenants || user.tenants.length === 0) {
         return null;
     }
+
+    // Get current tenant from URL or user context
+    const currentTenant = tenant || user.tenants.find((t) => t.slug === slug) || user.tenants[0];
 
     // Don't show switcher if user only has one tenant
     if (user.tenants.length === 1) {
@@ -90,21 +90,18 @@ export function TenantSwitcher() {
                                    bg-neutral-bg3 rounded-lg border border-white/10
                                    shadow-xl overflow-hidden z-50"
                     >
-                        {user.tenants.map((tenant) => (
+                        {user.tenants.map((tenantItem) => (
                             <button
-                                key={tenant.id}
-                                onClick={() => {
-                                    setCurrentTenant(tenant);
-                                    setIsOpen(false);
-                                }}
+                                key={tenantItem.id}
+                                onClick={() => handleTenantSwitch(tenantItem.slug)}
                                 className={`w-full px-3 py-2 text-left text-sm transition-colors ${
-                                    currentTenant?.id === tenant.id
+                                    currentTenant?.id === tenantItem.id
                                         ? 'text-brand-light bg-brand-subtle'
                                         : 'text-white hover:bg-white/5'
                                 }`}
                             >
-                                <p className="font-medium truncate">{tenant.name}</p>
-                                <p className="text-xs text-text-muted">Rol: {tenant.role}</p>
+                                <p className="font-medium truncate">{tenantItem.name}</p>
+                                <p className="text-xs text-text-muted">Rol: {tenantItem.role}</p>
                             </button>
                         ))}
                     </motion.div>

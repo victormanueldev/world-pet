@@ -2,15 +2,17 @@
  * Login Page
  *
  * User authentication with email/password and optional tenant selection.
+ * Supports both root login (/login) and tenant-specific login (/:slug/login).
  * Features glassmorphism dark theme, form validation, and smooth animations.
  */
-import { useState, type FormEvent } from 'react';
-import { Link } from 'react-router-dom';
+import { useState, useEffect, type FormEvent } from 'react';
+import { Link, useNavigate, useParams, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { PawPrint, Mail, Lock, ChevronRight, Building2, AlertCircle } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { Button } from '@/components/ui/Button';
 import { staggerContainer, staggerItem } from '@/lib/animations';
+import { api } from '@/services/api';
 
 // ----- Animation Variants --------------------------------------------------
 
@@ -31,8 +33,21 @@ const inputFocusVariants = {
 
 // ----- Component -----------------------------------------------------------
 
+interface TenantInfo {
+    id: number;
+    name: string;
+    slug: string;
+}
+
 export function Login() {
     const { login, selectTenant, pendingTenants, error, clearError } = useAuth();
+    const navigate = useNavigate();
+    const location = useLocation();
+    const { slug } = useParams<{ slug: string }>();
+
+    // Tenant info for tenant-specific login
+    const [tenantInfo, setTenantInfo] = useState<TenantInfo | null>(null);
+    const [isLoadingTenant, setIsLoadingTenant] = useState(false);
 
     // Form state
     const [email, setEmail] = useState('');
@@ -42,6 +57,40 @@ export function Login() {
     // Validation state
     const [emailError, setEmailError] = useState('');
     const [passwordError, setPasswordError] = useState('');
+
+    // Fetch tenant info if slug is present
+    useEffect(() => {
+        if (!slug) {
+            setTenantInfo(null);
+            return;
+        }
+
+        const fetchTenant = async () => {
+            setIsLoadingTenant(true);
+            try {
+                const response = await api.get<TenantInfo>(`/tenants/${slug}`);
+                setTenantInfo(response.data);
+            } catch {
+                setTenantInfo(null);
+            } finally {
+                setIsLoadingTenant(false);
+            }
+        };
+
+        fetchTenant();
+    }, [slug]);
+
+    // Determine redirect path after successful login
+    const getRedirectPath = (): string => {
+        // If there was a saved location, use that
+        const from = location.state?.from;
+        if (from) {
+            return from.pathname;
+        }
+        // If user has a tenant, redirect to tenant dashboard
+        // (will be handled by the login response)
+        return '/';
+    };
 
     // Validate email format
     const validateEmail = (value: string): boolean => {
@@ -87,7 +136,23 @@ export function Login() {
 
         setIsLoading(true);
         try {
-            await login({ email, password });
+            const result = await login({ 
+                email, 
+                password,
+                // If logging in at a specific tenant, pass the tenant ID
+                ...(tenantInfo && { tenantId: tenantInfo.id }),
+            });
+            
+            // If login successful and user has tenants, redirect to first tenant's dashboard
+            if (result.success && result.data?.user) {
+                const redirectPath = getRedirectPath();
+                if (redirectPath === '/' && result.data.user.tenants?.length > 0) {
+                    const primaryTenant = result.data.user.tenants[0];
+                    navigate(`/${primaryTenant.slug}/`, { replace: true });
+                } else if (redirectPath !== '/') {
+                    navigate(redirectPath, { replace: true });
+                }
+            }
         } finally {
             setIsLoading(false);
         }
@@ -97,11 +162,25 @@ export function Login() {
     const handleTenantSelect = async (tenantId: number) => {
         setIsLoading(true);
         try {
-            await selectTenant(tenantId);
+            const result = await selectTenant(tenantId);
+            if (result.success && result.data?.user) {
+                const primaryTenant = result.data.user.tenants?.[0];
+                if (primaryTenant) {
+                    navigate(`/${primaryTenant.slug}/`, { replace: true });
+                }
+            }
         } finally {
             setIsLoading(false);
         }
     };
+
+    // Show tenant-specific branding
+    const pageTitle = tenantInfo 
+        ? `Inicia sesion en ${tenantInfo.name}` 
+        : 'Inicia sesion en tu cuenta';
+    const pageSubtitle = tenantInfo
+        ? 'Accede a tu cuenta de paciente'
+        : '';
 
     return (
         <div
@@ -131,7 +210,10 @@ export function Login() {
                         </div>
                     </div>
                     <h1 className="text-2xl font-semibold text-white">World Pet</h1>
-                    <p className="text-text-secondary mt-1">Inicia sesion en tu cuenta</p>
+                    <p className="text-text-secondary mt-1">{pageTitle}</p>
+                    {pageSubtitle && (
+                        <p className="text-text-muted text-sm mt-1">{pageSubtitle}</p>
+                    )}
                 </motion.div>
 
                 {/* Login card */}
