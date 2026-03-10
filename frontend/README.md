@@ -15,7 +15,7 @@ The modern, responsive web interface for the World Pet platform. Built with Reac
 ## 🛠️ Getting Started
 
 ### Prerequisites
-- Node.js (v18+)
+- Node.js (v22+)
 - npm
 
 ### Installation

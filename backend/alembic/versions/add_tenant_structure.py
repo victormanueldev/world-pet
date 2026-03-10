@@ -34,17 +34,25 @@ def upgrade() -> None:
     op.create_index(op.f("ix_tenants_id"), "tenants", ["id"], unique=False)
     op.create_index(op.f("ix_tenants_slug"), "tenants", ["slug"], unique=True)
 
-    # Add tenant_id column to users (initially nullable for backfill)
-    op.add_column("users", sa.Column("tenant_id", sa.Integer(), nullable=True))
-    op.create_index(op.f("ix_users_tenant_id"), "users", ["tenant_id"], unique=False)
-    op.create_foreign_key(
-        "fk_users_tenant_id",
+    # Create users table
+    op.create_table(
         "users",
-        "tenants",
-        ["tenant_id"],
-        ["id"],
-        ondelete="SET NULL",
+        sa.Column("id", sa.Integer(), nullable=False),
+        sa.Column("email", sa.String(length=255), nullable=False),
+        sa.Column("name", sa.String(length=255), nullable=False),
+        sa.Column("password_hash", sa.String(length=255), nullable=False),
+        sa.Column("role", sa.String(length=50), nullable=False, server_default="user"),
+        sa.Column("tenant_id", sa.Integer(), nullable=True),
+        sa.Column("created_at", sa.DateTime(), nullable=False),
+        sa.Column("updated_at", sa.DateTime(), nullable=False),
+        sa.ForeignKeyConstraint(
+            ["tenant_id"], ["tenants.id"], name="fk_users_tenant_id", ondelete="SET NULL"
+        ),
+        sa.PrimaryKeyConstraint("id"),
     )
+    op.create_index(op.f("ix_users_email"), "users", ["email"], unique=True)
+    op.create_index(op.f("ix_users_id"), "users", ["id"], unique=False)
+    op.create_index(op.f("ix_users_tenant_id"), "users", ["tenant_id"], unique=False)
 
     # Create user_tenants association table
     op.create_table(
@@ -70,5 +78,5 @@ def upgrade() -> None:
 
 def downgrade() -> None:
     op.drop_table("user_tenants")
-    op.drop_column("users", "tenant_id")
+    op.drop_table("users")
     op.drop_table("tenants")

@@ -26,7 +26,7 @@ from app.models import Tenant, User, UserTenant  # noqa: F401
 config = context.config
 
 # Override sqlalchemy.url from our settings (reads .env).
-config.set_main_option("sqlalchemy.url", settings.database_url)
+config.set_main_option("sqlalchemy.url", settings.async_database_url)
 
 # Set up logging from alembic.ini.
 if config.config_file_name is not None:
