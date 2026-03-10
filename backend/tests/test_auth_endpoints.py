@@ -173,45 +173,73 @@ class TestLoginEndpoint:
     @pytest.mark.asyncio
     async def test_login_success_single_tenant(self) -> None:
         """Test successful login with single tenant."""
-        with (
-            patch("app.api.v1.endpoints.auth.auth_service") as mock_service,
-            patch("app.api.v1.endpoints.auth.get_db") as mock_get_db,
-        ):
-            mock_db = AsyncMock()
-            mock_get_db.return_value = mock_db
+        from app.db.session import get_db
 
-            # Mock successful authentication
-            mock_user = MagicMock(spec=User)
-            mock_user.id = 1
-            mock_user.is_active = True
-            mock_service.authenticate_user = AsyncMock(return_value=mock_user)
+        mock_db = AsyncMock()
 
-            # Mock single tenant association
-            mock_association = MagicMock(spec=UserTenant)
-            mock_association.tenant_id = 1
-            mock_association.role = "admin"
-            mock_service.get_user_tenant_associations = AsyncMock(
-                return_value=[mock_association]
-            )
+        async def mock_get_db_override():
+            yield mock_db
 
-            mock_service.update_last_login = AsyncMock(return_value=mock_user)
+        # Override the dependency on the app
+        app.dependency_overrides[get_db] = mock_get_db_override
 
-            async with AsyncClient(
-                transport=ASGITransport(app=app), base_url="http://test"
-            ) as client:
-                response = await client.post(
-                    "/api/v1/auth/login",
-                    json={
-                        "email": "user@example.com",
-                        "password": "password123",
-                    },
+        try:
+            with patch("app.api.v1.endpoints.auth.auth_service") as mock_service:
+                # Mock successful authentication
+                mock_user = MagicMock(spec=User)
+                mock_user.id = 1
+                mock_user.email = "user@example.com"
+                mock_user.name = "Test User"
+                mock_user.is_active = True
+                mock_service.authenticate_user = AsyncMock(return_value=mock_user)
+
+                # Mock single tenant association
+                mock_association = MagicMock(spec=UserTenant)
+                mock_association.tenant_id = 1
+                mock_association.role = "admin"
+                mock_service.get_user_tenant_associations = AsyncMock(
+                    return_value=[mock_association]
                 )
 
-            assert response.status_code == 200
-            data = response.json()
-            assert "access_token" in data
-            assert "refresh_token" in data
-            assert data["token_type"] == "bearer"
+                mock_service.update_last_login = AsyncMock(return_value=mock_user)
+
+                # Mock tenant lookup for user info
+                mock_tenant = MagicMock(spec=Tenant)
+                mock_tenant.id = 1
+                mock_tenant.name = "Test Tenant"
+                mock_tenant.slug = "test-tenant"
+                mock_scalars = MagicMock()
+                mock_scalars.all.return_value = [mock_tenant]
+                mock_result = MagicMock()
+                mock_result.scalars.return_value = mock_scalars
+                mock_db.execute = AsyncMock(return_value=mock_result)
+
+                async with AsyncClient(
+                    transport=ASGITransport(app=app), base_url="http://test"
+                ) as client:
+                    response = await client.post(
+                        "/api/v1/auth/login",
+                        json={
+                            "email": "user@example.com",
+                            "password": "password123",
+                        },
+                    )
+
+                assert response.status_code == 200
+                data = response.json()
+                assert "access_token" in data
+                assert "refresh_token" in data
+                assert data["token_type"] == "bearer"
+                assert "user" in data
+                assert data["user"]["email"] == "user@example.com"
+                assert data["user"]["name"] == "Test User"
+                assert data["user"]["role"] == "admin"
+                assert data["user"]["tenant_id"] == 1
+                assert len(data["user"]["tenants"]) == 1
+                assert data["user"]["tenants"][0]["id"] == 1
+                assert data["user"]["tenants"][0]["name"] == "Test Tenant"
+        finally:
+            app.dependency_overrides.clear()
 
 
 class TestRefreshEndpoint:

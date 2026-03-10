@@ -1,7 +1,7 @@
 """Unit tests for auth service."""
 
 import pytest
-from datetime import datetime, timezone
+from datetime import datetime
 from unittest.mock import AsyncMock, MagicMock, patch
 
 from app.services.auth_service import (
@@ -182,9 +182,9 @@ class TestUpdateLastLogin:
         mock_user = MagicMock(spec=User)
         mock_user.last_login = None
 
-        before = datetime.now(timezone.utc)
+        before = datetime.utcnow()
         await update_last_login(db, mock_user)
-        after = datetime.now(timezone.utc)
+        after = datetime.utcnow()
 
         # Verify timestamp was set
         assert mock_user.last_login is not None

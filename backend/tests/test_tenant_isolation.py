@@ -40,15 +40,15 @@ async def test_health_endpoint_no_tenant_required():
 
 @pytest.mark.asyncio
 async def test_tenant_endpoint_requires_tenant_context():
-    """Tenant endpoints should require tenant context."""
+    """Tenant endpoints should require authentication."""
     async with AsyncClient(
         transport=ASGITransport(app=app), base_url="http://test"
     ) as client:
-        # Try to list tenants without tenant header
+        # Try to list tenants without auth
         response = await client.get("/api/v1/tenants")
 
-    # Should fail with 400 (no tenant context)
-    assert response.status_code == 400
+    # Should fail with 401 (not authenticated) - auth is now required
+    assert response.status_code == 401
 
 
 @pytest.mark.asyncio
@@ -72,7 +72,7 @@ async def test_tenant_endpoint_with_header():
 
 @pytest.mark.asyncio
 async def test_invalid_tenant_header_format():
-    """Invalid tenant ID format should return 400."""
+    """Invalid tenant ID format should return 401 when no auth."""
     async with AsyncClient(
         transport=ASGITransport(app=app), base_url="http://test"
     ) as client:
@@ -80,7 +80,8 @@ async def test_invalid_tenant_header_format():
             "/api/v1/tenants", headers={"X-Tenant-ID": "invalid"}
         )
 
-    assert response.status_code == 400
+    # Returns 401 because auth is required first
+    assert response.status_code == 401
 
 
 class TestTenantIsolation:

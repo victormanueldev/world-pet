@@ -60,11 +60,11 @@
 
 ## 9. Backend Integration Testing
 
-- [ ] 9.1 Create auth test fixtures (authenticated client, test users with tokens)
-- [ ] 9.2 Write end-to-end tests for registration → login → access protected resource flow
-- [ ] 9.3 Write tests for multi-tenant user login and tenant switching
-- [ ] 9.4 Write tests for role-based access control scenarios
-- [ ] 9.5 Verify existing tests pass with new auth requirements
+- [x] 9.1 Create auth test fixtures (authenticated client, test users with tokens)
+- [x] 9.2 Write end-to-end tests for registration → login → access protected resource flow
+- [x] 9.3 Write tests for multi-tenant user login and tenant switching
+- [x] 9.4 Write tests for role-based access control scenarios
+- [x] 9.5 Verify existing tests pass with new auth requirements
 
 # Frontend
 
@@ -80,7 +80,7 @@
 - [x] 11.1 Create src/services/auth.ts with login, register, refresh, logout API calls
 - [x] 11.2 Create src/services/api.ts axios instance with Authorization header interceptor
 - [x] 11.3 Add response interceptor for 401 handling (redirect to login or attempt refresh)
-- [ ] 11.4 Write unit tests for auth service
+- [x] 11.4 Write unit tests for auth service
 
 ## 12. Auth Pages
 
@@ -89,7 +89,7 @@
 - [x] 12.3 Apply glassmorphism dark theme styling to auth pages
 - [x] 12.4 Add form validation with error messages
 - [x] 12.5 Add loading states and Framer Motion animations
-- [ ] 12.6 Write component tests for Login and Register pages
+- [x] 12.6 Write component tests for Login and Register pages
 
 ## 13. Protected Routes
 
@@ -107,7 +107,7 @@
 
 ## 15. Frontend Integration Testing
 
-- [ ] 15.1 Write tests for auth flow (login → dashboard access)
-- [ ] 15.2 Write tests for protected route redirects
-- [ ] 15.3 Write tests for token refresh behavior
-- [ ] 15.4 Write tests for logout and session cleanup
+- [x] 15.1 Write tests for auth flow (login → dashboard access)
+- [x] 15.2 Write tests for protected route redirects
+- [x] 15.3 Write tests for token refresh behavior
+- [x] 15.4 Write tests for logout and session cleanup

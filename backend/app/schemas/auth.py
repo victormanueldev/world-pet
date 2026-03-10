@@ -16,20 +16,35 @@ class LoginRequest(BaseModel):
     )
 
 
+class TenantInfo(BaseModel):
+    """Schema for tenant information in login response."""
+
+    id: int
+    name: str
+    slug: str = ""
+    role: str
+
+
+class LoginUserInfo(BaseModel):
+    """Schema for user information in login response."""
+
+    id: int
+    email: str
+    name: str
+    role: str
+    tenant_id: int | None
+    tenants: list[TenantInfo] = []
+
+    model_config = ConfigDict(from_attributes=True)
+
+
 class LoginResponse(BaseModel):
     """Schema for login response."""
 
     access_token: str
     refresh_token: str
     token_type: str = "bearer"
-
-
-class TenantInfo(BaseModel):
-    """Schema for tenant information in login response."""
-
-    id: int
-    name: str
-    role: str
+    user: LoginUserInfo
 
 
 class LoginTenantSelectionRequired(BaseModel):
@@ -88,6 +103,7 @@ class UserProfile(BaseModel):
     is_active: bool
     created_at: datetime
     last_login: datetime | None
+    tenants: list[TenantInfo] = []
 
     model_config = ConfigDict(from_attributes=True)
 

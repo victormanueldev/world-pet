@@ -9,6 +9,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.core.security import (
     TokenDecodeError,
     TokenExpiredError,
+    TokenPayload,
     create_access_token,
     create_refresh_token,
     decode_token,
@@ -21,6 +22,7 @@ from app.schemas.auth import (
     LoginRequest,
     LoginResponse,
     LoginTenantSelectionRequired,
+    LoginUserInfo,
     RegisterRequest,
     RegisterResponse,
     TenantInfo,
@@ -140,6 +142,7 @@ async def login(
             TenantInfo(
                 id=a.tenant_id,
                 name=tenants[a.tenant_id].name if a.tenant_id in tenants else "Unknown",
+                slug=tenants[a.tenant_id].slug if a.tenant_id in tenants else "",
                 role=a.role,
             )
             for a in associations
@@ -156,6 +159,22 @@ async def login(
     # Update last login
     await auth_service.update_last_login(db, user)
 
+    # Fetch all tenants for user info
+    tenant_ids = [a.tenant_id for a in associations]
+    result = await db.execute(select(Tenant).where(Tenant.id.in_(tenant_ids)))
+    tenants = {t.id: t for t in result.scalars().all()}
+
+    # Build user tenants info
+    user_tenants = [
+        TenantInfo(
+            id=a.tenant_id,
+            name=tenants[a.tenant_id].name if a.tenant_id in tenants else "Unknown",
+            slug=tenants[a.tenant_id].slug if a.tenant_id in tenants else "",
+            role=a.role,
+        )
+        for a in associations
+    ]
+
     # Create tokens
     access_token = create_access_token(
         user_id=user.id,
@@ -167,6 +186,14 @@ async def login(
     return LoginResponse(
         access_token=access_token,
         refresh_token=refresh_token,
+        user=LoginUserInfo(
+            id=user.id,
+            email=user.email,
+            name=user.name,
+            role=selected_role,
+            tenant_id=selected_tenant_id,
+            tenants=user_tenants,
+        ),
     )
 
 
@@ -240,6 +267,37 @@ async def refresh_token(
 @router.get("/me", response_model=UserProfile)
 async def get_current_user_profile(
     current_user: Annotated[User, Depends(get_current_active_user)],
-) -> User:
+    token_payload: Annotated[TokenPayload, Depends(get_token_payload)],
+    db: Annotated[AsyncSession, Depends(get_db)],
+) -> UserProfile:
     """Get the current authenticated user's profile."""
-    return current_user
+    # Get user's tenant associations
+    associations = await auth_service.get_user_tenant_associations(db, current_user.id)
+
+    # Fetch tenant info
+    tenant_ids = [a.tenant_id for a in associations]
+    result = await db.execute(select(Tenant).where(Tenant.id.in_(tenant_ids)))
+    tenants = {t.id: t for t in result.scalars().all()}
+
+    # Build tenants list
+    user_tenants = [
+        TenantInfo(
+            id=a.tenant_id,
+            name=tenants[a.tenant_id].name if a.tenant_id in tenants else "Unknown",
+            slug=tenants[a.tenant_id].slug if a.tenant_id in tenants else "",
+            role=a.role,
+        )
+        for a in associations
+    ]
+
+    return UserProfile(
+        id=current_user.id,
+        email=current_user.email,
+        name=current_user.name,
+        role=token_payload.role or current_user.role,
+        tenant_id=token_payload.tenant_id,
+        is_active=current_user.is_active,
+        created_at=current_user.created_at,
+        last_login=current_user.last_login,
+        tenants=user_tenants,
+    )

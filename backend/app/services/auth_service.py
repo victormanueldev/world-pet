@@ -1,6 +1,6 @@
 """Authentication service for user registration and login."""
 
-from datetime import datetime, timezone
+from datetime import datetime
 
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -104,7 +104,7 @@ async def update_last_login(db: AsyncSession, user: User) -> User:
     Returns:
         Updated user.
     """
-    user.last_login = datetime.now(timezone.utc)
+    user.last_login = datetime.utcnow()
     await db.commit()
     await db.refresh(user)
     return user
