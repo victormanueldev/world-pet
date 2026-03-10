@@ -1,11 +1,19 @@
 import { describe, it, expect, vi } from 'vitest';
-import { render, fireEvent } from '@testing-library/react';
+import { render } from '@testing-library/react';
+import { BrowserRouter } from 'react-router-dom';
 import { TenantSwitcher } from './TenantSwitcher';
 import { TenantProvider, useTenant } from '../../context/TenantContext';
+import { AuthProvider } from '../../context/AuthContext';
 import React from 'react';
 
 function TestWrapper({ children }: { children: React.ReactNode }) {
-  return <TenantProvider>{children}</TenantProvider>;
+  return (
+    <BrowserRouter>
+      <AuthProvider>
+        <TenantProvider>{children}</TenantProvider>
+      </AuthProvider>
+    </BrowserRouter>
+  );
 }
 
 describe('TenantSwitcher', () => {

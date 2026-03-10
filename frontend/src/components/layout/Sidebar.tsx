@@ -3,6 +3,7 @@
  *
  * Renders top-level navigation links for the World Pet app.
  * Active route is highlighted using react-router-dom's NavLink.
+ * Shows user menu when authenticated.
  */
 import { NavLink } from "react-router-dom";
 import { motion } from "framer-motion";
@@ -19,6 +20,8 @@ import {
     type LucideIcon,
 } from "lucide-react";
 import { TenantSwitcher } from "../tenant/TenantSwitcher";
+import { UserMenu } from "./UserMenu";
+import { useAuth } from "@/hooks/useAuth";
 
 // ----- Nav items -----------------------------------------------------------
 
@@ -42,6 +45,8 @@ const NAV_ITEMS: NavItem[] = [
 // ----- Component -----------------------------------------------------------
 
 export function Sidebar() {
+    const { isAuthenticated } = useAuth();
+
     return (
         <aside className="glass-panel flex flex-col w-64 min-h-screen p-4">
             {/* Logo / branding */}
@@ -54,10 +59,12 @@ export function Sidebar() {
                 </span>
             </div>
 
-            {/* Tenant Switcher */}
-            <div className="px-2 mb-4">
-                <TenantSwitcher />
-            </div>
+            {/* Tenant Switcher - only show when authenticated */}
+            {isAuthenticated && (
+                <div className="px-2 mb-4">
+                    <TenantSwitcher />
+                </div>
+            )}
 
             {/* Navigation links */}
             <nav className="flex-1 space-y-1">
@@ -87,6 +94,13 @@ export function Sidebar() {
                     </NavLink>
                 ))}
             </nav>
+
+            {/* User menu - only show when authenticated */}
+            {isAuthenticated && (
+                <div className="mt-4 pt-4 border-t border-white/10">
+                    <UserMenu />
+                </div>
+            )}
         </aside>
     );
 }
