@@ -12,8 +12,16 @@ from app.dependencies.auth import (
     require_role,
 )
 from app.models.user import User
-from app.schemas.tenant import TenantCreate, TenantList, TenantResponse, TenantUpdate
-from app.services import tenant_service
+from app.schemas.tenant import (
+    TenantCreate,
+    TenantList,
+    TenantPublicInfo,
+    TenantRegisterRequest,
+    TenantRegisterResponse,
+    TenantResponse,
+    TenantUpdate,
+)
+from app.services import auth_service, tenant_service
 
 router = APIRouter(prefix="/tenants", tags=["tenants"])
 
@@ -53,6 +61,79 @@ async def list_tenants(
     return TenantList(
         total=total,
         tenants=[TenantResponse.model_validate(t) for t in tenants],
+    )
+
+
+@router.get("/{slug}", response_model=TenantPublicInfo)
+async def get_tenant_by_slug(
+    slug: str,
+    db: Annotated[AsyncSession, Depends(get_db)],
+) -> TenantPublicInfo:
+    """Get a tenant by slug (public endpoint).
+
+    Returns basic tenant information without authentication.
+    """
+    tenant = await tenant_service.get_tenant_by_slug(db, slug)
+    if not tenant:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Clinic not found",
+        )
+    return TenantPublicInfo(
+        id=tenant.id,
+        name=tenant.name,
+        slug=tenant.slug,
+    )
+
+
+@router.post(
+    "/{slug}/register",
+    response_model=TenantRegisterResponse,
+    status_code=status.HTTP_201_CREATED,
+)
+async def register_at_tenant(
+    slug: str,
+    request: TenantRegisterRequest,
+    db: Annotated[AsyncSession, Depends(get_db)],
+) -> TenantRegisterResponse:
+    """Register a new user at a specific tenant (clinic).
+
+    The tenant is determined by the URL slug, not the request body.
+    """
+    # Get tenant by slug
+    tenant = await tenant_service.get_tenant_by_slug(db, slug)
+    if not tenant:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Clinic not found",
+        )
+
+    # Check if email already exists
+    existing_user = await auth_service.get_user_by_email(db, request.email)
+    if existing_user is not None:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Email already registered",
+        )
+
+    # Create user with the tenant from URL
+    user = await auth_service.register_user(
+        db=db,
+        email=request.email,
+        name=request.name,
+        password=request.password,
+        tenant_id=tenant.id,
+        role="user",
+    )
+
+    return TenantRegisterResponse(
+        id=user.id,
+        email=user.email,
+        name=user.name,
+        tenant_id=tenant.id,
+        tenant_slug=tenant.slug,
+        tenant_name=tenant.name,
+        created_at=user.created_at,
     )
 
 
