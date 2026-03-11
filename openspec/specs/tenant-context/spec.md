@@ -47,3 +47,17 @@ The system SHALL make tenant context available throughout the request processing
 #### Scenario: Service layer accesses tenant context
 - **WHEN** any service method is called
 - **THEN** tenant_id is available in the request context for data scoping
+
+### Requirement: Frontend tenant slug validation
+The frontend SHALL validate that the URL slug matches one of the user's accessible tenants before allowing access to protected routes.
+
+#### Scenario: Frontend validates slug against user tenants
+- **WHEN** authenticated user navigates to `/{slug}/...` route
+- **THEN** frontend checks if slug matches any tenant in user's accessible_tenants
+- **AND** if match found, allows access to the protected route
+- **AND** if no match, redirects to user's first accessible tenant
+
+#### Scenario: Frontend redirects on invalid slug
+- **WHEN** authenticated user navigates to `/{invalidSlug}/dashboard`
+- **AND** invalidSlug does not match any accessible tenant
+- **THEN** frontend redirects to `/{primaryTenantSlug}/dashboard`

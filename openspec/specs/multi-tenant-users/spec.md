@@ -99,3 +99,8 @@ The system SHALL redirect authenticated users to their tenant-specific path afte
 - **WHEN** user visits `/tenants/{slug}/login` and logs in
 - **THEN** response includes the requested tenant in accessible_tenants
 - **AND** frontend redirects to `/{tenantSlug}/dashboard` (the requested tenant)
+
+#### Scenario: Root login redirects to tenant dashboard
+- **WHEN** authenticated user visits `/login` (root level)
+- **THEN** frontend redirects to `/{firstAccessibleTenantSlug}/`
+- **AND** does not display the login form

@@ -101,14 +101,21 @@ describe('ProtectedRoute', () => {
         mockUseAuth.mockReturnValue({
             isAuthenticated: true,
             isLoading: false,
-            user: { id: 1, name: 'Test User', email: 'test@example.com', role: 'member', tenantId: 1, tenants: [] },
+            user: { id: 1, name: 'Test User', email: 'test@example.com', role: 'member', tenantId: 1, tenants: [{ id: 1, name: 'Test Clinic', slug: 'test', role: 'member' }] },
+        });
+        mockUseTenant.mockReturnValue({
+            tenant: { id: 1, name: 'Test Clinic', slug: 'test', role: 'member' },
+            isLoading: false,
+            isValidating: false,
+            error: null,
+            refreshTenant: vi.fn(),
         });
 
         render(
-            <MemoryRouter initialEntries={['/dashboard']}>
+            <MemoryRouter initialEntries={['/test/dashboard']}>
                 <Routes>
                     <Route
-                        path="/dashboard"
+                        path="/:slug/dashboard"
                         element={
                             <ProtectedRoute>
                                 <div>Protected Content</div>
@@ -126,7 +133,7 @@ describe('ProtectedRoute', () => {
         mockUseAuth.mockReturnValue({
             isAuthenticated: true,
             isLoading: false,
-            user: { id: 1, name: 'Admin User', email: 'admin@example.com', role: 'admin', tenantId: 1, tenants: [] },
+            user: { id: 1, name: 'Admin User', email: 'admin@example.com', role: 'admin', tenantId: 1, tenants: [{ id: 1, name: 'Test Clinic', slug: 'test', role: 'admin' }] },
         });
         mockUseTenant.mockReturnValue({
             tenant: { id: 1, name: 'Test', slug: 'test', role: 'admin' },
@@ -137,10 +144,10 @@ describe('ProtectedRoute', () => {
         });
 
         render(
-            <MemoryRouter initialEntries={['/test/admin']}>
+            <MemoryRouter initialEntries={['/test/dashboard']}>
                 <Routes>
                     <Route
-                        path="/test/admin"
+                        path="/:slug/dashboard"
                         element={
                             <ProtectedRoute requiredRoles={['admin']}>
                                 <div>Admin Content</div>
@@ -158,7 +165,7 @@ describe('ProtectedRoute', () => {
         mockUseAuth.mockReturnValue({
             isAuthenticated: true,
             isLoading: false,
-            user: { id: 1, name: 'Member User', email: 'member@example.com', role: 'member', tenantId: 1, tenants: [] },
+            user: { id: 1, name: 'Member User', email: 'member@example.com', role: 'member', tenantId: 1, tenants: [{ id: 1, name: 'Test Clinic', slug: 'test', role: 'member' }] },
         });
         mockUseTenant.mockReturnValue({
             tenant: { id: 1, name: 'Test', slug: 'test', role: 'member' },
@@ -172,14 +179,14 @@ describe('ProtectedRoute', () => {
             <MemoryRouter initialEntries={['/test/admin']}>
                 <Routes>
                     <Route
-                        path="/test/admin"
+                        path="/:slug/admin"
                         element={
                             <ProtectedRoute requiredRoles={['admin']}>
                                 <div>Admin Content</div>
                             </ProtectedRoute>
                         }
                     />
-                    <Route path="/test/" element={<div>Dashboard</div>} />
+                    <Route path="/:slug/" element={<div>Dashboard</div>} />
                 </Routes>
             </MemoryRouter>
         );

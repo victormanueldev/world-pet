@@ -14,7 +14,7 @@ interface PublicRouteProps {
 }
 
 export function PublicRoute({ children }: PublicRouteProps) {
-    const { isAuthenticated, isLoading } = useAuth();
+    const { isAuthenticated, isLoading, user } = useAuth();
     const location = useLocation();
 
     // Show loading skeleton while checking auth state
@@ -22,11 +22,13 @@ export function PublicRoute({ children }: PublicRouteProps) {
         return <AuthLoadingSkeleton />;
     }
 
-    // Redirect to dashboard if already authenticated
+    // Redirect to tenant dashboard if already authenticated
     if (isAuthenticated) {
-        // Check if there's a saved location to redirect to
-        const from = (location.state as { from?: Location })?.from?.pathname || '/';
-        return <Navigate to={from} replace />;
+        if (user?.tenants && user.tenants.length > 0) {
+            const primaryTenant = user.tenants[0];
+            return <Navigate to={`/${primaryTenant.slug}/`} replace />;
+        }
+        return <Navigate to="/login" replace />;
     }
 
     return <>{children}</>;
