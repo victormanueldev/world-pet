@@ -22,6 +22,18 @@ The system SHALL accept tenant_id via X-Tenant-ID header as fallback.
 - **WHEN** user sends request with both JWT tenant_id claim and X-Tenant-ID header
 - **THEN** system prioritizes JWT claim over header
 
+### Requirement: Tenant context extracted from URL path
+The system SHALL extract tenant slug from URL path for tenant identification.
+
+#### Scenario: Request to tenant-scoped path
+- **WHEN** user sends request to `/api/v1/tenants/{slug}/...` path
+- **THEN** system resolves tenant_id from slug in the URL path
+
+#### Scenario: Request to tenant path with invalid slug
+- **WHEN** user sends request to `/api/v1/tenants/{invalid-slug}/...`
+- **AND** slug does not correspond to any tenant
+- **THEN** system returns 404 error with "Clinic not found" message
+
 ### Requirement: Tenant context validation
 The system SHALL validate that the user has access to the requested tenant.
 

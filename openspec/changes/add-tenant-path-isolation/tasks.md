@@ -53,16 +53,16 @@
 
 ## 9. Testing
 
-- [ ] 9.1 Backend: Add tests for GET /tenants/{slug} endpoint
-- [ ] 9.2 Backend: Add tests for POST /tenants/{slug}/register endpoint
-- [ ] 9.3 Frontend: Add tests for tenant routing
-- [ ] 9.4 Frontend: Add tests for tenant mismatch redirect
-- [ ] 9.5 Integration: Test end-to-end tenant registration flow
-- [ ] 9.6 Integration: Test end-to-end login-to-dashboard flow
+- [x] 9.1 Backend: Add tests for GET /tenants/{slug} endpoint
+- [x] 9.2 Backend: Add tests for POST /tenants/{slug}/register endpoint
+- [x] 9.3 Frontend: Add tests for tenant routing
+- [x] 9.4 Frontend: Add tests for tenant mismatch redirect
+- [x] 9.5 Integration: Test end-to-end tenant registration flow
+- [x] 9.6 Integration: Test end-to-end login-to-dashboard flow
 
 ## 10. Documentation & Cleanup
 
-- [ ] 10.1 Update API documentation for new endpoints
-- [ ] 10.2 Update frontend routing documentation
-- [ ] 10.3 Run backend tests and fix any failures
-- [ ] 10.4 Run frontend tests and fix any failures
+- [x] 10.1 Update API documentation for new endpoints
+- [x] 10.2 Update frontend routing documentation
+- [x] 10.3 Run backend tests and fix any failures
+- [x] 10.4 Run frontend tests and fix any failures

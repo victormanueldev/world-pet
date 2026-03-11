@@ -50,6 +50,7 @@ The system SHALL allow authenticated users to list tenants they have access to.
 - **WHEN** authenticated user sends GET request to /api/v1/users/me/tenants
 - **THEN** system returns list of tenants the user has access to
 - **AND** each tenant includes the user's role in that tenant
+- **AND** each tenant includes the tenant slug
 
 #### Scenario: Unauthenticated user cannot list tenants
 - **WHEN** unauthenticated user sends GET request to /api/v1/users/me/tenants
@@ -61,13 +62,13 @@ The system SHALL provide a dependency that combines authentication with tenant c
 #### Scenario: get_authenticated_tenant_id validates access
 - **WHEN** endpoint uses get_authenticated_tenant_id dependency
 - **AND** user is authenticated
-- **AND** tenant context (from token or header) is valid for user
+- **AND** tenant context (from token or header or URL) is valid for user
 - **THEN** dependency returns validated tenant_id
 
 #### Scenario: get_authenticated_tenant_id rejects invalid tenant
 - **WHEN** endpoint uses get_authenticated_tenant_id dependency
 - **AND** user is authenticated
-- **AND** tenant_id (from header) is not accessible to user
+- **AND** tenant_id (from header or URL) is not accessible to user
 - **THEN** dependency raises 403 error with "tenant access denied" message
 
 ### Requirement: User-tenant association can be removed
@@ -78,3 +79,23 @@ The system SHALL allow removing user access to a tenant.
 - **THEN** user-tenant association is removed
 - **AND** user can no longer access that tenant
 - **AND** user's data in that tenant is preserved (not deleted)
+
+### Requirement: Post-login tenant redirect
+The system SHALL redirect authenticated users to their tenant-specific path after login.
+
+#### Scenario: Single-tenant user logs in
+- **WHEN** user with only one tenant logs in successfully
+- **THEN** response includes tenant slug in accessible_tenants
+- **AND** frontend redirects to `/{tenantSlug}/dashboard`
+
+#### Scenario: Multi-tenant user logs in
+- **WHEN** user with multiple tenants logs in successfully
+- **AND** no preferred tenant is selected
+- **THEN** response includes multiple tenants in accessible_tenants
+- **AND** frontend shows tenant selector
+- **AND** user selection redirects to `/{selectedTenantSlug}/dashboard`
+
+#### Scenario: User with tenant context logs in
+- **WHEN** user visits `/tenants/{slug}/login` and logs in
+- **THEN** response includes the requested tenant in accessible_tenants
+- **AND** frontend redirects to `/{tenantSlug}/dashboard` (the requested tenant)
