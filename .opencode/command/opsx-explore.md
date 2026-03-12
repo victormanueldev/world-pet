@@ -37,6 +37,7 @@ Depending on what the user brings, you might:
 - Challenge assumptions
 - Reframe the problem
 - Find analogies
+- Load skill `prod-owner` to search for more context of specs
 
 **Investigate the codebase**
 - Map existing architecture relevant to the discussion
