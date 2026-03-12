@@ -3,11 +3,25 @@
  *
  * This is the root page that unauthenticated users see when they
  * visit the platform. It shows marketing content and links to login/register.
+ * Authenticated users are redirected to their tenant dashboard.
  */
-import { Link } from "react-router-dom";
+import { Link, Navigate } from "react-router-dom";
 import { Button } from "@/components/ui/Button";
+import { useAuth } from "@/hooks/useAuth";
+import { AuthLoadingSkeleton } from "@/components/auth/AuthLoadingSkeleton";
 
 export function Landing() {
+    const { isAuthenticated, isLoading, user } = useAuth();
+
+    if (isLoading) {
+        return <AuthLoadingSkeleton />;
+    }
+
+    if (isAuthenticated && user?.tenants && user.tenants.length > 0) {
+        const primaryTenant = user.tenants[0];
+        return <Navigate to={`/${primaryTenant.slug}/`} replace />;
+    }
+
     return (
         <div className="min-h-screen bg-gray-900 text-white">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

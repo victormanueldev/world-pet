@@ -34,8 +34,17 @@ export function ProtectedRoute({ children, requiredRoles }: ProtectedRouteProps)
         return <Navigate to="/login" state={{ from: location }} replace />;
     }
 
+    // If no slug in URL, redirect to primary tenant dashboard
+    if (!slug) {
+        if (user?.tenants && user.tenants.length > 0) {
+            const primaryTenant = user.tenants[0];
+            return <Navigate to={`/${primaryTenant.slug}/`} replace />;
+        }
+        return <Navigate to="/login" replace />;
+    }
+
     // If there's a slug in the URL, validate tenant access
-    if (slug && tenantError) {
+    if (tenantError) {
         // User doesn't have access to this tenant - redirect to their primary tenant
         if (user?.tenants && user.tenants.length > 0) {
             const primaryTenant = user.tenants[0];
