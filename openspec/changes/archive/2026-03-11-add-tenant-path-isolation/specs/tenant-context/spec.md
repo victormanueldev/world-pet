@@ -1,4 +1,4 @@
-## ADDED Requirements
+## MODIFIED Requirements
 
 ### Requirement: Tenant context extracted from JWT
 The system SHALL extract tenant_id from JWT token claims.

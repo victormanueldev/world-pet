@@ -2,15 +2,17 @@
  * Register Page
  *
  * User registration with email, name, password, and optional tenant.
+ * Supports both root registration (/register) and tenant-specific registration (/:slug/register).
  * Features glassmorphism dark theme, form validation, and smooth animations.
  */
-import { useState, type FormEvent } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useState, useEffect, type FormEvent } from 'react';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { PawPrint, Mail, Lock, User, AlertCircle, CheckCircle } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { Button } from '@/components/ui/Button';
 import { staggerContainer, staggerItem } from '@/lib/animations';
+import { api } from '@/services/api';
 
 // ----- Animation Variants --------------------------------------------------
 
@@ -31,9 +33,20 @@ const inputFocusVariants = {
 
 // ----- Component -----------------------------------------------------------
 
+interface TenantInfo {
+    id: number;
+    name: string;
+    slug: string;
+}
+
 export function Register() {
     const { register, error, clearError } = useAuth();
     const navigate = useNavigate();
+    const { slug } = useParams<{ slug: string }>();
+
+    // Tenant info for tenant-specific registration
+    const [tenantInfo, setTenantInfo] = useState<TenantInfo | null>(null);
+    const [isLoadingTenant, setIsLoadingTenant] = useState(false);
 
     // Form state
     const [name, setName] = useState('');
@@ -48,6 +61,28 @@ export function Register() {
     const [emailError, setEmailError] = useState('');
     const [passwordError, setPasswordError] = useState('');
     const [confirmPasswordError, setConfirmPasswordError] = useState('');
+
+    // Fetch tenant info if slug is present
+    useEffect(() => {
+        if (!slug) {
+            setTenantInfo(null);
+            return;
+        }
+
+        const fetchTenant = async () => {
+            setIsLoadingTenant(true);
+            try {
+                const response = await api.get<TenantInfo>(`/tenants/${slug}`);
+                setTenantInfo(response.data);
+            } catch {
+                setTenantInfo(null);
+            } finally {
+                setIsLoadingTenant(false);
+            }
+        };
+
+        fetchTenant();
+    }, [slug]);
 
     // Validate name
     const validateName = (value: string): boolean => {
@@ -131,7 +166,28 @@ export function Register() {
 
         setIsLoading(true);
         try {
-            const result = await register({
+            let result;
+            
+            if (tenantInfo) {
+                // Use tenant-specific registration endpoint
+                const response = await api.post(`/tenants/${tenantInfo.slug}/register`, {
+                    name: name.trim(),
+                    email: email.trim(),
+                    password,
+                });
+                
+                if (response.status === 201) {
+                    setIsSuccess(true);
+                    // Redirect to tenant login after success
+                    setTimeout(() => {
+                        navigate(`/${tenantInfo.slug}/login`);
+                    }, 2000);
+                }
+                return;
+            }
+
+            // Use standard registration
+            result = await register({
                 name: name.trim(),
                 email: email.trim(),
                 password,
@@ -144,6 +200,8 @@ export function Register() {
                     navigate('/login');
                 }, 2000);
             }
+        } catch (err) {
+            // Error is handled by the API service
         } finally {
             setIsLoading(false);
         }
@@ -177,7 +235,14 @@ export function Register() {
                         </div>
                     </div>
                     <h1 className="text-2xl font-semibold text-white">World Pet</h1>
-                    <p className="text-text-secondary mt-1">Crea tu cuenta</p>
+                    {tenantInfo ? (
+                        <>
+                            <p className="text-brand-light mt-2">Registrate en {tenantInfo.name}</p>
+                            <p className="text-text-muted text-sm mt-1">Crea tu cuenta de paciente</p>
+                        </>
+                    ) : (
+                        <p className="text-text-secondary mt-1">Crea tu cuenta</p>
+                    )}
                 </motion.div>
 
                 {/* Register card */}
@@ -420,7 +485,7 @@ export function Register() {
                                 <p className="text-center text-sm text-text-secondary">
                                     Ya tienes cuenta?{' '}
                                     <Link
-                                        to="/login"
+                                        to={tenantInfo ? `/${tenantInfo.slug}/login` : '/login'}
                                         className="text-brand-light hover:text-brand-hover transition-colors"
                                     >
                                         Inicia sesion

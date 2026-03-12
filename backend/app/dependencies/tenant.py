@@ -1,7 +1,13 @@
 """FastAPI dependencies for tenant extraction."""
 
+from typing import Annotated
 
-from fastapi import Header, HTTPException, Request, status
+from fastapi import Depends, Header, HTTPException, Path, Request, status
+from sqlalchemy.ext.asyncio import AsyncSession
+
+from app.db.session import get_db
+from app.models.tenant import Tenant
+from app.services import tenant_service
 
 
 async def get_current_tenant_id(
@@ -65,3 +71,28 @@ async def get_optional_tenant_id(
         except ValueError:
             return None
     return None
+
+
+async def get_tenant_by_slug(
+    slug: Annotated[str, Path(min_length=1, max_length=100, description="Tenant slug")],
+    db: Annotated[AsyncSession, Depends(get_db)],
+) -> Tenant:
+    """Get a tenant by slug from the URL path.
+
+    Args:
+        slug: The tenant slug from the URL path
+        db: Database session
+
+    Returns:
+        The tenant object
+
+    Raises:
+        HTTPException: If tenant is not found
+    """
+    tenant = await tenant_service.get_tenant_by_slug(db, slug)
+    if tenant is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Clinic not found",
+        )
+    return tenant

@@ -1,4 +1,4 @@
-## ADDED Requirements
+## MODIFIED Requirements
 
 ### Requirement: User can belong to multiple tenants
 The system SHALL allow users to be associated with multiple tenants.
@@ -27,7 +27,7 @@ The system SHALL assign roles on a per-tenant basis.
 ### Requirement: User can switch active tenant
 The system SHALL allow users to specify which tenant context to use, validated against their authentication.
 
-#### Scenario: User switches active tenant
+#### Scenario: User switches active tenant via header
 - **WHEN** user sends request with X-Tenant-ID header for tenant they have access to
 - **THEN** system processes request in context of that tenant
 
