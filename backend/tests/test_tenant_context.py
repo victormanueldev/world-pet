@@ -1,7 +1,5 @@
 """Tests for tenant context extraction."""
 
-import pytest
-from unittest.mock import MagicMock, AsyncMock, patch
 
 from app.core.tenant_context import (
     TenantContext,

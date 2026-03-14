@@ -47,18 +47,18 @@ async def get_current_user(
 
     try:
         payload = decode_token(credentials.credentials, expected_type="access")
-    except TokenExpiredError:
+    except TokenExpiredError as e:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Token expired",
             headers={"WWW-Authenticate": "Bearer"},
-        )
-    except TokenDecodeError:
+        ) from e
+    except TokenDecodeError as e:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Invalid token",
             headers={"WWW-Authenticate": "Bearer"},
-        )
+        ) from e
 
     # Fetch user from database
     result = await db.execute(select(User).where(User.id == payload.user_id))
@@ -192,29 +192,29 @@ async def get_authenticated_tenant_id(
 
     try:
         payload = decode_token(credentials.credentials, expected_type="access")
-    except TokenExpiredError:
+    except TokenExpiredError as e:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Token expired",
             headers={"WWW-Authenticate": "Bearer"},
-        )
-    except TokenDecodeError:
+        ) from e
+    except TokenDecodeError as e:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Invalid token",
             headers={"WWW-Authenticate": "Bearer"},
-        )
+        ) from e
 
     # Determine target tenant: header overrides token
     target_tenant_id: int
     if x_tenant_id is not None:
         try:
             target_tenant_id = int(x_tenant_id)
-        except ValueError:
+        except ValueError as e:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail="Invalid tenant ID format",
-            )
+            ) from e
     elif payload.tenant_id is not None:
         target_tenant_id = payload.tenant_id
     else:
@@ -266,15 +266,15 @@ async def get_token_payload(
 
     try:
         return decode_token(credentials.credentials, expected_type="access")
-    except TokenExpiredError:
+    except TokenExpiredError as e:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Token expired",
             headers={"WWW-Authenticate": "Bearer"},
-        )
-    except TokenDecodeError:
+        ) from e
+    except TokenDecodeError as e:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Invalid token",
             headers={"WWW-Authenticate": "Bearer"},
-        )
+        ) from e
