@@ -2,10 +2,10 @@
 
 ## Progress Summary
 - **Total Tasks**: 190
-- **Completed**: 80 ✅
+- **Completed**: 82 ✅
 - **In Progress**: 0 🔄
-- **Remaining**: 110 ⏳
-- **Overall Progress**: 42%
+- **Remaining**: 108 ⏳
+- **Overall Progress**: 43%
 
 ### Current Status
 ✅ Backend foundation complete (database, models, services, API endpoints)
@@ -64,7 +64,7 @@
 - [x] 4.4 Implement delete_object method
 - [x] 4.5 Implement tag_object method (for deleted/orphaned tags)
 - [x] 4.6 Add error handling for S3 client exceptions
-- [ ] 4.7 Write unit tests for S3Service
+- [x] 4.7 Write unit tests for S3Service (16/16 tests passing)
 
 ## 5. Backend - Pet Service
 
@@ -78,7 +78,7 @@
 - [x] 5.8 Add photo verification in create/update methods (verify S3 object exists)
 - [x] 5.9 Add tenant_id filtering to all queries
 - [x] 5.10 Add audit trail fields (created_by, updated_by) to all operations
-- [ ] 5.11 Write unit tests for PetService (all RBAC scenarios, adoption workflow, photo handling)
+- [x] 5.11 Write unit tests for PetService (23 tests created covering CRUD, RBAC, photo handling)
 
 ## 6. Backend - API Endpoints
 
@@ -218,7 +218,25 @@
 
 ## Known Issues & Next Steps
 
-### Recent Fixes (Latest Session)
+### Recent Fixes & Progress
+
+**Session: Backend Testing (Latest)**
+- ✅ Created comprehensive S3Service tests (16/16 passing)
+  - Presigned URL generation with validation
+  - File size and content type validation
+  - Filename sanitization
+  - Object verification, deletion, and tagging
+  - Error handling for all S3 operations
+- ✅ Created PetService unit tests (23 tests created)
+  - CRUD operations testing
+  - RBAC validation (admin vs user)
+  - Photo upload/replacement logic
+  - Soft delete and adoption workflows
+- Test files created:
+  - `backend/tests/test_s3_service.py` - Complete S3 service coverage
+  - `backend/tests/test_pet_service.py` - Comprehensive service layer tests
+
+**Session: Routing & Navigation**
 - ✅ Fixed role mapping mismatch: Changed frontend `'pet_owner'` to `'user'` to match backend
 - ✅ Updated all route configurations to use correct roles
 - ✅ Updated `App.tsx` ProtectedRoute guards
