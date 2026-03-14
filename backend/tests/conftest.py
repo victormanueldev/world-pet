@@ -1,13 +1,14 @@
 """Pytest configuration and shared fixtures for tests."""
 
+from unittest.mock import MagicMock
+
 import pytest
 from httpx import ASGITransport, AsyncClient
-from unittest.mock import AsyncMock, MagicMock
 
-from app.main import app
 from app.core.security import create_access_token, create_refresh_token
-from app.models.user import User
+from app.main import app
 from app.models.tenant import Tenant
+from app.models.user import User
 from app.models.user_tenant import UserTenant
 
 

@@ -1,21 +1,22 @@
 """Tests for tenant service CRUD operations."""
 
-import pytest
+from datetime import datetime, UTC
 from unittest.mock import AsyncMock, MagicMock
-from datetime import datetime
 
-from app.services.tenant_service import (
-    create_tenant,
-    get_tenant_by_id,
-    get_tenant_by_slug,
-    update_tenant,
-    delete_tenant,
-    list_tenants,
-    create_default_tenant,
-    tenant_has_users,
-)
+import pytest
+
 from app.models.tenant import Tenant
 from app.schemas.tenant import TenantCreate, TenantUpdate
+from app.services.tenant_service import (
+    create_default_tenant,
+    create_tenant,
+    delete_tenant,
+    get_tenant_by_id,
+    get_tenant_by_slug,
+    list_tenants,
+    tenant_has_users,
+    update_tenant,
+)
 
 
 @pytest.fixture
@@ -37,8 +38,8 @@ def sample_tenant():
         name="Test Tenant",
         slug="test-tenant",
         settings=None,
-        created_at=datetime.utcnow(),
-        updated_at=datetime.utcnow(),
+        created_at=datetime.now(UTC),
+        updated_at=datetime.now(UTC),
     )
     return tenant
 

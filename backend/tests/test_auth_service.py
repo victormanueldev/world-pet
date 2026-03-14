@@ -1,19 +1,20 @@
 """Unit tests for auth service."""
 
-import pytest
-from datetime import datetime
-from unittest.mock import AsyncMock, MagicMock, patch
+from datetime import datetime, UTC
+from unittest.mock import AsyncMock, MagicMock
 
-from app.services.auth_service import (
-    get_user_by_email,
-    authenticate_user,
-    register_user,
-    update_last_login,
-    get_user_tenant_associations,
-    get_user_role_in_tenant,
-)
+import pytest
+
 from app.models.user import User
 from app.models.user_tenant import UserTenant
+from app.services.auth_service import (
+    authenticate_user,
+    get_user_by_email,
+    get_user_role_in_tenant,
+    get_user_tenant_associations,
+    register_user,
+    update_last_login,
+)
 
 
 class TestGetUserByEmail:
@@ -112,8 +113,6 @@ class TestRegisterUser:
         db.refresh = AsyncMock()
 
         # Mock the user ID assignment that happens on flush
-        original_add = db.add
-
         def add_side_effect(obj):
             if isinstance(obj, User):
                 obj.id = 1
@@ -182,9 +181,9 @@ class TestUpdateLastLogin:
         mock_user = MagicMock(spec=User)
         mock_user.last_login = None
 
-        before = datetime.utcnow()
+        before = datetime.now(UTC)
         await update_last_login(db, mock_user)
-        after = datetime.utcnow()
+        after = datetime.now(UTC)
 
         # Verify timestamp was set
         assert mock_user.last_login is not None

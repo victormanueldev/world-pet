@@ -208,16 +208,16 @@ async def refresh_token(
     """
     try:
         payload = decode_token(request.refresh_token, expected_type="refresh")
-    except TokenExpiredError:
+    except TokenExpiredError as e:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Refresh token expired",
-        )
-    except TokenDecodeError:
+        ) from e
+    except TokenDecodeError as e:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Invalid refresh token",
-        )
+        ) from e
 
     # Get user
     result = await db.execute(select(User).where(User.id == payload.user_id))
@@ -235,7 +235,7 @@ async def refresh_token(
             detail="Account disabled",
         )
 
-    # Get user's tenant associations to find a default tenant
+    # Get user's tenant associations
     associations = await auth_service.get_user_tenant_associations(db, user.id)
 
     if not associations:
@@ -244,13 +244,18 @@ async def refresh_token(
             detail="User has no tenant associations",
         )
 
-    # Use the first tenant (or the user's primary tenant_id if set)
-    if user.tenant_id:
-        # Find association matching user's primary tenant
+    # Use the tenant from the refresh token payload if available, otherwise use the first one
+    if payload.tenant_id:
+        # Find association matching the tenant from the refresh token
         association = next(
-            (a for a in associations if a.tenant_id == user.tenant_id),
-            associations[0],
+            (a for a in associations if a.tenant_id == payload.tenant_id),
+            None,
         )
+        if association is None:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="User no longer has access to the requested tenant",
+            )
     else:
         association = associations[0]
 
@@ -290,11 +295,26 @@ async def get_current_user_profile(
         for a in associations
     ]
 
+    # Get the role for the current tenant from the token payload
+    # If no role in token, try to find it in the user's tenant associations
+    role: str
+    if token_payload.role:
+        role = token_payload.role
+    elif token_payload.tenant_id:
+        # Find the role from associations
+        association_for_tenant = next(
+            (a for a in associations if a.tenant_id == token_payload.tenant_id),
+            None,
+        )
+        role = association_for_tenant.role if association_for_tenant else "user"
+    else:
+        role = "user"
+
     return UserProfile(
         id=current_user.id,
         email=current_user.email,
         name=current_user.name,
-        role=token_payload.role or current_user.role,
+        role=role,
         tenant_id=token_payload.tenant_id,
         is_active=current_user.is_active,
         created_at=current_user.created_at,

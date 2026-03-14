@@ -1,6 +1,6 @@
 """Security utilities for password hashing and JWT token management."""
 
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 from typing import Any
 
 import bcrypt
@@ -59,7 +59,7 @@ def create_access_token(
     if expires_delta is None:
         expires_delta = timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
 
-    expire = datetime.now(timezone.utc) + expires_delta
+    expire = datetime.now(UTC) + expires_delta
     to_encode: dict[str, Any] = {
         "sub": str(user_id),
         "tenant_id": tenant_id,
@@ -86,7 +86,7 @@ def create_refresh_token(
     if expires_delta is None:
         expires_delta = timedelta(days=settings.REFRESH_TOKEN_EXPIRE_DAYS)
 
-    expire = datetime.now(timezone.utc) + expires_delta
+    expire = datetime.now(UTC) + expires_delta
     to_encode: dict[str, Any] = {
         "sub": str(user_id),
         "type": "refresh",
@@ -164,8 +164,8 @@ def decode_token(token: str, expected_type: str = "access") -> TokenPayload:
     except JWTError as e:
         error_msg = str(e).lower()
         if "expired" in error_msg:
-            raise TokenExpiredError("Token has expired")
-        raise TokenDecodeError(f"Invalid token: {e}")
+            raise TokenExpiredError("Token has expired") from e
+        raise TokenDecodeError(f"Invalid token: {e}") from e
 
     sub: str | None = payload.get("sub")
     token_type: str | None = payload.get("type")

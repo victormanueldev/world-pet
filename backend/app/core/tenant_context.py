@@ -1,9 +1,8 @@
 """Tenant context for request-scoped tenant identification."""
 
 from contextvars import ContextVar
-from typing import Optional
 
-tenant_context: ContextVar[Optional[int]] = ContextVar("tenant_id", default=None)
+tenant_context: ContextVar[int | None] = ContextVar("tenant_id", default=None)
 
 
 class TenantContext:
@@ -11,7 +10,7 @@ class TenantContext:
 
     def __init__(self, tenant_id: int) -> None:
         self.tenant_id = tenant_id
-        self.token: Optional[str] = None
+        self.token: str | None = None
 
     def __enter__(self) -> "TenantContext":
         self.token = tenant_context.set(self.tenant_id)  # type: ignore[assignment]
@@ -22,7 +21,7 @@ class TenantContext:
             tenant_context.reset(self.token)  # type: ignore[arg-type]
 
 
-def get_current_tenant_id() -> Optional[int]:
+def get_current_tenant_id() -> int | None:
     """Get the current tenant ID from context."""
     return tenant_context.get()
 

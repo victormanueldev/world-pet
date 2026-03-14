@@ -84,10 +84,10 @@ async def tenant_has_users(db: AsyncSession, tenant_id: int) -> bool:
     """Check if a tenant has any users."""
     from sqlalchemy import func, select
 
-    from app.models.user import User
+    from app.models.user_tenant import UserTenant
 
     result = await db.execute(
-        select(func.count(User.id)).where(User.tenant_id == tenant_id)
+        select(func.count(UserTenant.user_id)).where(UserTenant.tenant_id == tenant_id)
     )
     count = result.scalar() or 0
     return count > 0

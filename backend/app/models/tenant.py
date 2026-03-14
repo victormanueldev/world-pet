@@ -30,4 +30,6 @@ class Tenant(Base):
         DateTime, default=datetime.utcnow, onupdate=datetime.utcnow, nullable=False
     )
 
-    users: Mapped[list["User"]] = relationship("User", back_populates="tenant")
+    users: Mapped[list["User"]] = relationship(
+        "User", back_populates="tenant", secondary="user_tenants"
+    )

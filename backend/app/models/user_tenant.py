@@ -28,4 +28,6 @@ class UserTenant(Base):
         DateTime, default=datetime.utcnow, nullable=False
     )
 
-    __table_args__ = (UniqueConstraint("user_id", "tenant_id", name="uq_user_tenant"),)
+    __table_args__ = (
+        UniqueConstraint("user_id", "tenant_id", "role", name="uq_user_tenant"),
+    )

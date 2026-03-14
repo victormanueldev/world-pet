@@ -1,8 +1,9 @@
 """Tests for tenant public endpoints."""
 
+from unittest.mock import AsyncMock, MagicMock, patch
+
 import pytest
 from httpx import ASGITransport, AsyncClient
-from unittest.mock import AsyncMock, MagicMock, patch
 
 from app.main import app
 from app.models.tenant import Tenant
@@ -83,7 +84,6 @@ class TestTenantRegistration:
     async def test_register_at_tenant_success(self) -> None:
         """Test successful registration at specific tenant."""
         from app.db.session import get_db
-        from app.services import auth_service
 
         mock_db = AsyncMock()
 
@@ -179,7 +179,6 @@ class TestTenantRegistration:
     async def test_register_at_tenant_email_exists(self) -> None:
         """Test 400 when email already registered."""
         from app.db.session import get_db
-        from app.services import auth_service
 
         mock_db = AsyncMock()
 

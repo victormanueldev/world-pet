@@ -1,15 +1,16 @@
 """Unit tests for auth dependencies."""
 
+from unittest.mock import AsyncMock, MagicMock
+
 import pytest
 from fastapi import HTTPException
 from fastapi.security import HTTPAuthorizationCredentials
-from unittest.mock import AsyncMock, MagicMock, patch
 
-from app.core.security import create_access_token, TokenPayload
+from app.core.security import TokenPayload, create_access_token
 from app.dependencies.auth import (
-    get_current_user,
-    get_current_active_user,
     get_authenticated_tenant_id,
+    get_current_active_user,
+    get_current_user,
     get_token_payload,
     require_role,
 )
