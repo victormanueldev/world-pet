@@ -5,8 +5,9 @@ import type { ComponentType } from 'react';
 
 /**
  * User roles supported in the application
+ * Must match backend roles: 'admin' and 'user'
  */
-export type RouteRole = 'admin' | 'pet_owner';
+export type RouteRole = 'admin' | 'user';
 
 /**
  * Individual route definition

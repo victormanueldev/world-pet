@@ -28,6 +28,9 @@ import {
     OwnerPets,
     OwnerVaccines,
     OwnerProfile,
+    AddPetPage,
+    EditPetPage,
+    PetDetailPage,
 } from "@/pages/owner";
 import { TenantProvider } from "@/context/TenantContext";
 
@@ -100,20 +103,23 @@ export default function App() {
                                             }
                                         />
 
-                                        {/* Pet owner routes */}
-                                        <Route
-                                            path="/owner/*"
-                                            element={
-                                                <ProtectedRoute requiredRoles={['pet_owner']}>
-                                                    <Routes>
-                                                        <Route path="appointments" element={<OwnerAppointments />} />
-                                                        <Route path="pets" element={<OwnerPets />} />
-                                                        <Route path="vaccines" element={<OwnerVaccines />} />
-                                                        <Route path="profile" element={<OwnerProfile />} />
-                                                    </Routes>
-                                                </ProtectedRoute>
-                                            }
-                                        />
+                        {/* User/Owner routes */}
+                        <Route
+                            path="/owner/*"
+                            element={
+                                <ProtectedRoute requiredRoles={['user']}>
+                                    <Routes>
+                                        <Route path="appointments" element={<OwnerAppointments />} />
+                                        <Route path="pets" element={<OwnerPets />} />
+                                        <Route path="pets/new" element={<AddPetPage />} />
+                                        <Route path="pets/:petId" element={<PetDetailPage />} />
+                                        <Route path="pets/:petId/edit" element={<EditPetPage />} />
+                                        <Route path="vaccines" element={<OwnerVaccines />} />
+                                        <Route path="profile" element={<OwnerProfile />} />
+                                    </Routes>
+                                </ProtectedRoute>
+                            }
+                        />
                                     </Routes>
                                 </AppShell>
                             </ProtectedRoute>

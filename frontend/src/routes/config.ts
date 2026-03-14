@@ -24,11 +24,11 @@ export const routeGroups: RouteGroup[] = [
     // Shared routes accessible to all authenticated users
     {
         label: 'Shared',
-        roles: ['admin', 'pet_owner'],
+        roles: ['admin', 'user'],
         routes: [
             {
                 path: '/',
-                roles: ['admin', 'pet_owner'],
+                roles: ['admin', 'user'],
                 component: Dashboard,
                 label: 'Dashboard',
                 icon: 'home',
@@ -72,35 +72,35 @@ export const routeGroups: RouteGroup[] = [
         ],
     },
 
-    // My Account routes - pet owner only
+    // My Account routes - user role only
     {
         label: 'My Account',
-        roles: ['pet_owner'],
+        roles: ['user'],
         routes: [
             {
                 path: '/owner/appointments',
-                roles: ['pet_owner'],
+                roles: ['user'],
                 component: OwnerAppointments,
                 label: 'Appointments',
                 icon: 'calendar',
             },
             {
                 path: '/owner/pets',
-                roles: ['pet_owner'],
+                roles: ['user'],
                 component: OwnerPets,
                 label: 'My Pets',
                 icon: 'pets',
             },
             {
                 path: '/owner/vaccines',
-                roles: ['pet_owner'],
+                roles: ['user'],
                 component: OwnerVaccines,
                 label: 'Vaccinations',
                 icon: 'syringe',
             },
             {
                 path: '/owner/profile',
-                roles: ['pet_owner'],
+                roles: ['user'],
                 component: OwnerProfile,
                 label: 'Profile',
                 icon: 'user',
