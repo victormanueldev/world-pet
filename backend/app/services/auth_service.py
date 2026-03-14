@@ -102,7 +102,7 @@ async def update_last_login(db: AsyncSession, user: User) -> User:
     Returns:
         Updated user.
     """
-    user.last_login = datetime.now(UTC)
+    user.last_login = datetime.now(UTC).replace(tzinfo=None)
     await db.commit()
     await db.refresh(user)
     return user

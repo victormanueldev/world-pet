@@ -1,6 +1,6 @@
 """User SQLAlchemy model."""
 
-from datetime import datetime
+from datetime import datetime, UTC
 from typing import TYPE_CHECKING, Optional
 
 from sqlalchemy import Boolean, DateTime, Integer, String
@@ -25,10 +25,13 @@ class User(Base):
     password_hash: Mapped[str] = mapped_column(String(255), nullable=False)
     is_active: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False)
     created_at: Mapped[datetime] = mapped_column(
-        DateTime, default=datetime.utcnow, nullable=False
+        DateTime, default=lambda: datetime.now(UTC).replace(tzinfo=None), nullable=False
     )
     updated_at: Mapped[datetime] = mapped_column(
-        DateTime, default=datetime.utcnow, onupdate=datetime.utcnow, nullable=False
+        DateTime,
+        default=lambda: datetime.now(UTC).replace(tzinfo=None),
+        onupdate=lambda: datetime.now(UTC).replace(tzinfo=None),
+        nullable=False,
     )
     last_login: Mapped[datetime | None] = mapped_column(DateTime, nullable=True)
 

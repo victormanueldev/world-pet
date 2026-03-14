@@ -29,6 +29,7 @@ import {
     OwnerVaccines,
     OwnerProfile,
 } from "@/pages/owner";
+import { TenantProvider } from "@/context/TenantContext";
 
 export default function App() {
     return (
@@ -77,44 +78,46 @@ export default function App() {
                 <Route
                     path="/:slug/*"
                     element={
-                        <ProtectedRoute>
-                            <AppShell>
-                                <Routes>
-                                    {/* Shared dashboard */}
-                                    <Route path="/" element={<Dashboard />} />
+                        <TenantProvider>
+                            <ProtectedRoute>
+                                <AppShell>
+                                    <Routes>
+                                        {/* Shared dashboard */}
+                                        <Route path="/" element={<Dashboard />} />
 
-                                    {/* Admin routes */}
-                                    <Route
-                                        path="/admin/*"
-                                        element={
-                                            <ProtectedRoute requiredRoles={['admin']}>
-                                                <Routes>
-                                                    <Route path="appointments" element={<AdminAppointments />} />
-                                                    <Route path="pets" element={<AdminPets />} />
-                                                    <Route path="vaccines" element={<AdminVaccines />} />
-                                                    <Route path="settings" element={<AdminSettings />} />
-                                                </Routes>
-                                            </ProtectedRoute>
-                                        }
-                                    />
+                                        {/* Admin routes */}
+                                        <Route
+                                            path="/admin/*"
+                                            element={
+                                                <ProtectedRoute requiredRoles={['admin']}>
+                                                    <Routes>
+                                                        <Route path="appointments" element={<AdminAppointments />} />
+                                                        <Route path="pets" element={<AdminPets />} />
+                                                        <Route path="vaccines" element={<AdminVaccines />} />
+                                                        <Route path="settings" element={<AdminSettings />} />
+                                                    </Routes>
+                                                </ProtectedRoute>
+                                            }
+                                        />
 
-                                    {/* Pet owner routes */}
-                                    <Route
-                                        path="/owner/*"
-                                        element={
-                                            <ProtectedRoute requiredRoles={['pet_owner']}>
-                                                <Routes>
-                                                    <Route path="appointments" element={<OwnerAppointments />} />
-                                                    <Route path="pets" element={<OwnerPets />} />
-                                                    <Route path="vaccines" element={<OwnerVaccines />} />
-                                                    <Route path="profile" element={<OwnerProfile />} />
-                                                </Routes>
-                                            </ProtectedRoute>
-                                        }
-                                    />
-                                </Routes>
-                            </AppShell>
-                        </ProtectedRoute>
+                                        {/* Pet owner routes */}
+                                        <Route
+                                            path="/owner/*"
+                                            element={
+                                                <ProtectedRoute requiredRoles={['pet_owner']}>
+                                                    <Routes>
+                                                        <Route path="appointments" element={<OwnerAppointments />} />
+                                                        <Route path="pets" element={<OwnerPets />} />
+                                                        <Route path="vaccines" element={<OwnerVaccines />} />
+                                                        <Route path="profile" element={<OwnerProfile />} />
+                                                    </Routes>
+                                                </ProtectedRoute>
+                                            }
+                                        />
+                                    </Routes>
+                                </AppShell>
+                            </ProtectedRoute>
+                        </TenantProvider>
                     }
                 />
             </Routes>

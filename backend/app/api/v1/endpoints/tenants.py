@@ -123,7 +123,7 @@ async def register_at_tenant(
         name=request.name,
         password=request.password,
         tenant_id=tenant.id,
-        role="user",
+        role="pet_owner",
     )
 
     return TenantRegisterResponse(

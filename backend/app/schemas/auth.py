@@ -64,7 +64,6 @@ class RegisterRequest(BaseModel):
         min_length=8,
         description="Password must be at least 8 characters long.",
     )
-    tenant_id: int = Field(..., gt=0, description="Tenant ID to register user with.")
 
 
 class RegisterResponse(BaseModel):
