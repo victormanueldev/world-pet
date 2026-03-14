@@ -105,14 +105,14 @@
 ## 10. Frontend - Reusable Components
 
 - [x] 10.1 Create PhotoUpload component (src/components/pets/PhotoUpload.tsx) with drag-drop, preview, validation
-- [ ] 10.2 Create PetForm component (src/components/pets/PetForm.tsx) with all fields, validation, photo upload
-- [ ] 10.3 Create PetCard component (src/components/pets/PetCard.tsx) for grid/list display
-- [ ] 10.4 Create PetFilters component (src/components/pets/PetFilters.tsx) for admin search/filter UI
-- [ ] 10.5 Create PetList component (src/components/pets/PetList.tsx) for displaying pet grid/table
+- [x] 10.2 Create PetForm component (src/components/pets/PetForm.tsx) with all fields, validation, photo upload
+- [x] 10.3 Create PetCard component (src/components/pets/PetCard.tsx) for grid/list display
+- [x] 10.4 Create PetFilters component (src/components/pets/PetFilters.tsx) for admin search/filter UI
+- [x] 10.5 Create PetList component (src/components/pets/PetList.tsx) for displaying pet grid/table
 - [ ] 10.6 Create PetDetailHeader component (src/components/pets/PetDetailHeader.tsx) with photo, name, age, species
 - [ ] 10.7 Create AdoptPetModal component (src/components/pets/AdoptPetModal.tsx) for admin owner assignment
-- [ ] 10.8 Add dark theme styling with glassmorphism to all components
-- [ ] 10.9 Add Framer Motion animations to components
+- [x] 10.8 Add dark theme styling with glassmorphism to all components
+- [x] 10.9 Add Framer Motion animations to components
 
 ## 11. Frontend - Owner Pages
 
