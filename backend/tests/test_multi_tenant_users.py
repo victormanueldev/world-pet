@@ -1,11 +1,11 @@
 """Integration tests for multi-tenant user access."""
 
-import pytest
-from unittest.mock import AsyncMock, MagicMock, patch
+from unittest.mock import AsyncMock, MagicMock
 
-from app.services import user_service
-from app.models.user import User
+import pytest
+
 from app.models.user_tenant import UserTenant
+from app.services import user_service
 
 
 class TestUserTenantAssociation:
@@ -15,12 +15,11 @@ class TestUserTenantAssociation:
     async def test_add_user_to_tenant(self):
         """Test adding a user to a tenant."""
         mock_db = AsyncMock()
-
-        # Mock the commit and refresh
+        mock_db.add = MagicMock()
         mock_db.commit = AsyncMock()
         mock_db.refresh = AsyncMock()
 
-        result = await user_service.add_user_to_tenant(
+        await user_service.add_user_to_tenant(
             mock_db, user_id=1, tenant_id=1, role="user"
         )
 
@@ -153,8 +152,9 @@ class TestMultiTenantUserQueries:
 
     def test_list_users_requires_tenant(self):
         """list_users should require tenant_id."""
-        from app.services import user_service
         import inspect
+
+        from app.services import user_service
 
         sig = inspect.signature(user_service.list_users)
         params = list(sig.parameters.keys())
@@ -163,8 +163,9 @@ class TestMultiTenantUserQueries:
 
     def test_get_user_by_email_requires_tenant(self):
         """get_user_by_email should require tenant_id."""
-        from app.services import user_service
         import inspect
+
+        from app.services import user_service
 
         sig = inspect.signature(user_service.get_user_by_email)
         params = list(sig.parameters.keys())
@@ -173,8 +174,9 @@ class TestMultiTenantUserQueries:
 
     def test_create_user_requires_tenant(self):
         """create_user should require tenant_id."""
-        from app.services import user_service
         import inspect
+
+        from app.services import user_service
 
         sig = inspect.signature(user_service.create_user)
         params = list(sig.parameters.keys())

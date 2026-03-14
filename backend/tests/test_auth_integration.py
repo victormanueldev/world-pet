@@ -1,13 +1,14 @@
 """Integration tests for authentication flows."""
 
-import pytest
-from httpx import ASGITransport, AsyncClient
 from unittest.mock import AsyncMock, MagicMock, patch
 
+import pytest
+from httpx import ASGITransport, AsyncClient
+
+from app.core.security import create_access_token, hash_password
 from app.main import app
-from app.core.security import create_access_token, create_refresh_token, hash_password
-from app.models.user import User
 from app.models.tenant import Tenant
+from app.models.user import User
 from app.models.user_tenant import UserTenant
 
 
@@ -303,13 +304,20 @@ class TestRoleBasedAccessControl:
             mock_user_tenant = MagicMock(spec=UserTenant)
             mock_user_tenant.role = "user"  # Not admin
 
-            def mock_execute(query):
-                result = MagicMock()
-                # First call returns user, second returns user_tenant
-                result.scalar_one_or_none.side_effect = [mock_user, mock_user_tenant]
-                return result
+            # Mock results for each db.execute call
+            # 1. get_current_user: select(User) -> mock_user
+            result1 = MagicMock()
+            result1.scalar_one_or_none.return_value = mock_user
 
-            mock_db.execute = AsyncMock(side_effect=mock_execute)
+            # 2. get_authenticated_tenant_id: select(UserTenant) -> mock_user_tenant
+            result2 = MagicMock()
+            result2.scalar_one_or_none.return_value = mock_user_tenant
+
+            # 3. role_checker: select(UserTenant) -> mock_user_tenant
+            result3 = MagicMock()
+            result3.scalar_one_or_none.return_value = mock_user_tenant
+
+            mock_db.execute = AsyncMock(side_effect=[result1, result2, result3])
 
             # Create regular user token
             user_token = create_access_token(user_id=1, tenant_id=1, role="user")

@@ -1,8 +1,8 @@
 """User service with tenant-scoped operations."""
 
-from typing import Optional, cast
+from typing import cast
 
-from sqlalchemy import select, func
+from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models.user import User
@@ -22,46 +22,78 @@ async def create_user(
         email=email,
         name=name,
         password_hash=password_hash,
+    )
+    db.add(user)
+    await db.flush()  # Get user.id without committing
+
+    # Create user-tenant association
+    user_tenant = UserTenant(
+        user_id=user.id,
         tenant_id=tenant_id,
         role=role,
     )
-    db.add(user)
+    db.add(user_tenant)
     await db.commit()
     await db.refresh(user)
     return user
 
 
-async def get_user_by_id(
-    db: AsyncSession, user_id: int, tenant_id: int
-) -> Optional[User]:
+async def get_user_by_id(db: AsyncSession, user_id: int, tenant_id: int) -> User | None:
     """Get a user by ID, scoped to tenant."""
+    # Check if user has access to this tenant
     result = await db.execute(
-        select(User).where(User.id == user_id, User.tenant_id == tenant_id)
+        select(UserTenant).where(
+            UserTenant.user_id == user_id,
+            UserTenant.tenant_id == tenant_id,
+        )
     )
-    return result.scalar_one_or_none()
+    association = result.scalar_one_or_none()
+    if not association:
+        return None
+
+    # Get the user
+    user_result = await db.execute(select(User).where(User.id == user_id))
+    return user_result.scalar_one_or_none()
 
 
 async def get_user_by_email(
     db: AsyncSession, email: str, tenant_id: int
-) -> Optional[User]:
+) -> User | None:
     """Get a user by email, scoped to tenant."""
-    result = await db.execute(
-        select(User).where(User.email == email, User.tenant_id == tenant_id)
+    # First get the user by email (global)
+    user_result = await db.execute(select(User).where(User.email == email))
+    user = user_result.scalar_one_or_none()
+    if not user:
+        return None
+
+    # Check if user has access to this tenant
+    access_result = await db.execute(
+        select(UserTenant).where(
+            UserTenant.user_id == user.id,
+            UserTenant.tenant_id == tenant_id,
+        )
     )
-    return result.scalar_one_or_none()
+    association = access_result.scalar_one_or_none()
+    return user if association else None
 
 
 async def list_users(
     db: AsyncSession, tenant_id: int, skip: int = 0, limit: int = 20
 ) -> tuple[list[User], int]:
     """List users with pagination, scoped to tenant."""
+    # Get users who have access to this tenant
     result = await db.execute(
-        select(User).where(User.tenant_id == tenant_id).offset(skip).limit(limit)
+        select(User)
+        .join(UserTenant, User.id == UserTenant.user_id)
+        .where(UserTenant.tenant_id == tenant_id)
+        .offset(skip)
+        .limit(limit)
     )
     users = result.scalars().all()
 
+    # Count total users in this tenant
     count_result = await db.execute(
-        select(func.count(User.id)).where(User.tenant_id == tenant_id)
+        select(func.count(UserTenant.user_id)).where(UserTenant.tenant_id == tenant_id)
     )
     total = cast(int, count_result.scalar() or 0)
 
@@ -136,7 +168,7 @@ async def user_has_tenant_access(
 
 async def get_user_role_in_tenant(
     db: AsyncSession, user_id: int, tenant_id: int
-) -> Optional[str]:
+) -> str | None:
     """Get a user's role in a specific tenant."""
     result = await db.execute(
         select(UserTenant).where(

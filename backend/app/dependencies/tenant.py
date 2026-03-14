@@ -41,11 +41,11 @@ async def get_current_tenant_id(
     if x_tenant_id is not None:
         try:
             return int(x_tenant_id)
-        except ValueError:
+        except ValueError as e:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail="Invalid tenant ID format",
-            )
+            ) from e
 
     # No tenant context found
     raise HTTPException(
