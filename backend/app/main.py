@@ -1,48 +1,33 @@
-from fastapi import FastAPI, Request, status
-from fastapi.responses import JSONResponse
+"""FastAPI application factory and entry point."""
+
+from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.api.v1 import auth, users
-from app.core.config import settings, setup_logging
+from app.api.v1.router import api_router
+from app.core.config import settings
 
-setup_logging()
-
+# ---------------------------------------------------------------------------
+# Application instance
+# ---------------------------------------------------------------------------
 app = FastAPI(
     title=settings.PROJECT_NAME,
-    version=settings.VERSION,
     openapi_url=f"{settings.API_V1_STR}/openapi.json",
+    docs_url=f"{settings.API_V1_STR}/docs",
+    redoc_url=f"{settings.API_V1_STR}/redoc",
 )
 
-app.include_router(auth.router, prefix=f"{settings.API_V1_STR}/auth", tags=["auth"])
-app.include_router(users.router, prefix=f"{settings.API_V1_STR}/users", tags=["users"])
+# ---------------------------------------------------------------------------
+# CORS – tighten origins in production
+# ---------------------------------------------------------------------------
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=settings.ALLOWED_ORIGINS,
-    allow_credentials=settings.ALLOW_CREDENTIALS,
-    allow_methods=settings.ALLOWED_METHODS,
-    allow_headers=settings.ALLOWED_HEADERS,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
-@app.exception_handler(Exception)
-async def universal_exception_handler(request: Request, exc: Exception):
-    """Universal exception handler to ensure all errors follow the standard format."""
-    return JSONResponse(
-        status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-        content={
-            "error": {
-                "code": 500,
-                "message": str(exc),
-                "status": "INTERNAL_SERVER_ERROR",
-            }
-        },
-    )
-
-
-@app.get("/health", tags=["health"])
-async def health_check():
-    return {"status": "ok"}
-
-
-@app.get("/")
-async def root():
-    return {"message": f"Welcome to {settings.PROJECT_NAME}"}
+# ---------------------------------------------------------------------------
+# Routers
+# ---------------------------------------------------------------------------
+app.include_router(api_router, prefix=settings.API_V1_STR)

@@ -1,62 +1,123 @@
-import React from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import { AuthProvider } from './context/AuthProvider';
-import { AuthContext } from './context/auth-context';
-import Login from './pages/Login';
-import Register from './pages/Register';
-import AdminLayout from './components/layout/AdminLayout';
-import PetProfile from './pages/PetProfile';
+/**
+ * App.tsx — Root route configuration.
+ *
+ * Routing structure:
+ * - / : Landing page (public)
+ * - /login : Root login (public)
+ * - /register : Root register (public)
+ * - /:slug/login : Tenant-specific login (public)
+ * - /:slug/register : Tenant-specific registration (public)
+ * - /:slug/* : Protected tenant routes (role-based)
+ */
+import { Routes, Route } from "react-router-dom";
+import { AnimatePresence } from "framer-motion";
+import { AppShell } from "@/components/layout/AppShell";
+import { ProtectedRoute, PublicRoute } from "@/components/auth";
+import { Dashboard } from "@/pages/Dashboard";
+import { Landing } from "@/pages/Landing";
+import { Login } from "@/pages/Login";
+import { Register } from "@/pages/Register";
+import {
+    AdminAppointments,
+    AdminPets,
+    AdminVaccines,
+    AdminSettings,
+} from "@/pages/admin";
+import {
+    OwnerAppointments,
+    OwnerPets,
+    OwnerVaccines,
+    OwnerProfile,
+} from "@/pages/owner";
 
-const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const auth = React.useContext(AuthContext);
+export default function App() {
+    return (
+        <AnimatePresence mode="wait">
+            <Routes>
+                {/* Root landing page */}
+                <Route path="/" element={<Landing />} />
 
-  if (auth?.isLoading) return <div>Loading...</div>;
-  if (!auth?.isAuthenticated) return <Navigate to="/login" />;
+                {/* Root auth routes - redirect to dashboard if authenticated */}
+                <Route
+                    path="/login"
+                    element={
+                        <PublicRoute>
+                            <Login />
+                        </PublicRoute>
+                    }
+                />
+                <Route
+                    path="/register"
+                    element={
+                        <PublicRoute>
+                            <Register />
+                        </PublicRoute>
+                    }
+                />
 
-  return <>{children}</>;
-};
+                {/* Tenant-specific public routes */}
+                <Route
+                    path="/:slug/login"
+                    element={
+                        <PublicRoute>
+                            <Login />
+                        </PublicRoute>
+                    }
+                />
+                <Route
+                    path="/:slug/register"
+                    element={
+                        <PublicRoute>
+                            <Register />
+                        </PublicRoute>
+                    }
+                />
 
-const App: React.FC = () => {
-  return (
-    <AuthProvider>
-      <Router>
-        <Routes>
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
+                {/* Protected tenant routes */}
+                <Route
+                    path="/:slug/*"
+                    element={
+                        <ProtectedRoute>
+                            <AppShell>
+                                <Routes>
+                                    {/* Shared dashboard */}
+                                    <Route path="/" element={<Dashboard />} />
 
-          <Route path="/" element={
-            <ProtectedRoute>
-              <AdminLayout>
-                <Navigate to="/dashboard" />
-              </AdminLayout>
-            </ProtectedRoute>
-          } />
+                                    {/* Admin routes */}
+                                    <Route
+                                        path="/admin/*"
+                                        element={
+                                            <ProtectedRoute requiredRoles={['admin']}>
+                                                <Routes>
+                                                    <Route path="appointments" element={<AdminAppointments />} />
+                                                    <Route path="pets" element={<AdminPets />} />
+                                                    <Route path="vaccines" element={<AdminVaccines />} />
+                                                    <Route path="settings" element={<AdminSettings />} />
+                                                </Routes>
+                                            </ProtectedRoute>
+                                        }
+                                    />
 
-          <Route path="/dashboard" element={
-            <ProtectedRoute>
-              <AdminLayout>
-                <div className="premium-card">
-                  <h1>Admin Dashboard</h1>
-                  <p>Welcome to the World Pet administration panel.</p>
-                </div>
-              </AdminLayout>
-            </ProtectedRoute>
-          } />
-
-          <Route path="/pets" element={
-            <ProtectedRoute>
-              <AdminLayout>
-                <PetProfile />
-              </AdminLayout>
-            </ProtectedRoute>
-          } />
-
-          {/* Catch all */}
-          <Route path="*" element={<Navigate to="/login" />} />
-        </Routes>
-      </Router>
-    </AuthProvider>
-  );
-};
-
-export default App;
+                                    {/* Pet owner routes */}
+                                    <Route
+                                        path="/owner/*"
+                                        element={
+                                            <ProtectedRoute requiredRoles={['pet_owner']}>
+                                                <Routes>
+                                                    <Route path="appointments" element={<OwnerAppointments />} />
+                                                    <Route path="pets" element={<OwnerPets />} />
+                                                    <Route path="vaccines" element={<OwnerVaccines />} />
+                                                    <Route path="profile" element={<OwnerProfile />} />
+                                                </Routes>
+                                            </ProtectedRoute>
+                                        }
+                                    />
+                                </Routes>
+                            </AppShell>
+                        </ProtectedRoute>
+                    }
+                />
+            </Routes>
+        </AnimatePresence>
+    );
+}

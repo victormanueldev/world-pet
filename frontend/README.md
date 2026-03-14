@@ -1,73 +1,87 @@
-# React + TypeScript + Vite
+# World Pet — Frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+The modern, responsive web interface for the World Pet platform. Built with React, TypeScript, and Tailwind CSS, featuring a premium dark-themed design with glassmorphism effects and fluid animations.
 
-Currently, two official plugins are available:
+## 🚀 Tech Stack
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- **React 18** — UI Library
+- **TypeScript** — Static typing for robust code
+- **Vite** — High-performance build tool
+- **Tailwind CSS** — Utility-first styling with custom dark theme
+- **Framer Motion** — Industry-standard animation library
+- **Vitest + RTL** — Unit and integration testing
+- **Lucide React** — Icon suite
 
-## React Compiler
+## 🛠️ Getting Started
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+### Prerequisites
+- Node.js (v22+)
+- npm
 
-## Expanding the ESLint configuration
+### Installation
+```bash
+# Navigate to frontend directory
+cd frontend
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+# Install dependencies
+npm install
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
-
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+### Development
+```bash
+# Start dev server with HMR
+npm run dev
 ```
+The app will be available at `http://localhost:5173`.
+
+### Testing & Quality
+```bash
+# Run unit tests (Vitest)
+npm test
+
+# Run tests in watch mode
+npm run test:watch
+
+# Type-check with tsc
+npm run typecheck
+
+# Lint with ESLint
+npm run lint
+```
+
+### Production Build
+```bash
+# Create optimized production build
+npm run build
+
+# Preview production build locally
+npm run preview
+```
+
+## 📂 Project Structure
+
+```text
+frontend/
+├── src/
+│   ├── assets/             # Static assets (images, fonts)
+│   ├── components/
+│   │   ├── layout/         # AppShell, Sidebar, PageHeader
+│   │   └── ui/             # Reusable base components (Button, Input, etc.)
+│   ├── lib/                # Shared utilities & animation variants
+│   ├── pages/              # Page components (Dashboard, Pets, etc.)
+│   ├── styles/             # Global CSS & Tailwind design tokens
+│   ├── App.tsx             # Root component & Routing
+│   └── main.tsx            # Entry point
+├── public/                 # Static public files (favicons, manifest)
+├── tailwind.config.js       # Design system configuration
+├── vitest.config.ts        # Test runner configuration
+└── vite.config.ts          # Bundler configuration
+```
+
+## ✨ Features
+
+- **Premium Dark Mode**: Curated color palette optimized for low-light environments.
+- **Glassmorphism**: Subtle backdrop blurs and semi-transparent surfaces for a modern feel.
+- **Micro-interactions**: Spring-based animations on buttons and interactive elements.
+- **Responsive Layout**: Persistent sidebar on desktop with a liquid main content area.
+- **Type-Safe Development**: Comprehensive TypeScript definitions for components and props.

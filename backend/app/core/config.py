@@ -1,51 +1,58 @@
-import logging
-import sys
+"""Core application configuration using pydantic-settings."""
 
-from pydantic_settings import BaseSettings
+from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class Settings(BaseSettings):
-    PROJECT_NAME: str = "World Pet API"
-    VERSION: str = "v1"
-    API_V1_STR: str = "/api/v1"
+    """Application settings loaded from environment variables."""
 
-    # Logging
-    LOG_LEVEL: str = "INFO"
-
+    # ---------------------------------------------------------------------------
     # Database
-    DATABASE_URL: str = "postgresql://postgres:postgres@localhost:5433/worldpet"
+    # ---------------------------------------------------------------------------
+    POSTGRES_SERVER: str = "localhost"
+    POSTGRES_USER: str = "worldpetuser"
+    POSTGRES_PASSWORD: str = "worldpetpassword"
+    POSTGRES_DB: str = "world_pet"
+    POSTGRES_PORT: int = 5432
 
-    # Redis
-    REDIS_URL: str = "redis://redis:6379/0"
-
+    # ---------------------------------------------------------------------------
     # Security
-    SECRET_KEY: str = "your-secret-key"
+    # ---------------------------------------------------------------------------
+    SECRET_KEY: str
     ALGORITHM: str = "HS256"
-    ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
+    ACCESS_TOKEN_EXPIRE_MINUTES: int = 15  # 15 minutes for access tokens
+    REFRESH_TOKEN_EXPIRE_DAYS: int = 7  # 7 days for refresh tokens
 
-    class Config:
-        case_sensitive = True
+    # ---------------------------------------------------------------------------
+    # Application
+    # ---------------------------------------------------------------------------
+    PROJECT_NAME: str = "World Pet API"
+    API_V1_STR: str = "/api/v1"
+    DEBUG: bool = False
 
-    # CORS
-    ALLOWED_ORIGINS: list[str] = [
-        "http://localhost:3000",
-        "http://localhost:5173",
-        "http://localhost:8000",
-        "http://localhost:8080",
-    ]
-    ALLOWED_METHODS: list[str] = ["GET", "POST", "PUT", "DELETE", "OPTIONS"]
-    ALLOWED_HEADERS: list[str] = ["*"]
-    ALLOW_CREDENTIALS: bool = True
-
-
-settings = Settings()
-
-
-def setup_logging() -> None:
-    logging.basicConfig(
-        level=settings.LOG_LEVEL,
-        format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
-        stream=sys.stdout,
+    model_config = SettingsConfigDict(
+        env_file=".env",
+        env_file_encoding="utf-8",
+        case_sensitive=True,
+        extra="ignore",
     )
-    # Filter out health checks if needed
-    # logging.getLogger("uvicorn.access").addFilter(...)
+
+    @property
+    def database_url(self) -> str:
+        """Synchronous PostgreSQL URL for Alembic."""
+        return (
+            f"postgresql+psycopg2://{self.POSTGRES_USER}:{self.POSTGRES_PASSWORD}"
+            f"@{self.POSTGRES_SERVER}:{self.POSTGRES_PORT}/{self.POSTGRES_DB}"
+        )
+
+    @property
+    def async_database_url(self) -> str:
+        """Asynchronous PostgreSQL URL for SQLAlchemy async engine."""
+        return (
+            f"postgresql+asyncpg://{self.POSTGRES_USER}:{self.POSTGRES_PASSWORD}"
+            f"@{self.POSTGRES_SERVER}:{self.POSTGRES_PORT}/{self.POSTGRES_DB}"
+        )
+
+
+# Singleton settings instance used throughout the application.
+settings = Settings()

@@ -1,0 +1,110 @@
+/**
+ * Centralized route configuration with role-based access control
+ */
+import type { RouteGroup } from './types';
+import { Dashboard } from '@/pages/Dashboard';
+import {
+    AdminAppointments,
+    AdminPets,
+    AdminVaccines,
+    AdminSettings,
+} from '@/pages/admin';
+import {
+    OwnerAppointments,
+    OwnerPets,
+    OwnerVaccines,
+    OwnerProfile,
+} from '@/pages/owner';
+
+/**
+ * Route groups organized by role and purpose
+ * This configuration drives both routing and navigation generation
+ */
+export const routeGroups: RouteGroup[] = [
+    // Shared routes accessible to all authenticated users
+    {
+        label: 'Shared',
+        roles: ['admin', 'pet_owner'],
+        routes: [
+            {
+                path: '/',
+                roles: ['admin', 'pet_owner'],
+                component: Dashboard,
+                label: 'Dashboard',
+                icon: 'home',
+            },
+        ],
+    },
+
+    // Administration routes - admin only
+    {
+        label: 'Administration',
+        roles: ['admin'],
+        routes: [
+            {
+                path: '/admin/appointments',
+                roles: ['admin'],
+                component: AdminAppointments,
+                label: 'Appointments',
+                icon: 'calendar',
+            },
+            {
+                path: '/admin/pets',
+                roles: ['admin'],
+                component: AdminPets,
+                label: 'Pets',
+                icon: 'pets',
+            },
+            {
+                path: '/admin/vaccines',
+                roles: ['admin'],
+                component: AdminVaccines,
+                label: 'Vaccines',
+                icon: 'syringe',
+            },
+            {
+                path: '/admin/settings',
+                roles: ['admin'],
+                component: AdminSettings,
+                label: 'Settings',
+                icon: 'settings',
+            },
+        ],
+    },
+
+    // My Account routes - pet owner only
+    {
+        label: 'My Account',
+        roles: ['pet_owner'],
+        routes: [
+            {
+                path: '/owner/appointments',
+                roles: ['pet_owner'],
+                component: OwnerAppointments,
+                label: 'Appointments',
+                icon: 'calendar',
+            },
+            {
+                path: '/owner/pets',
+                roles: ['pet_owner'],
+                component: OwnerPets,
+                label: 'My Pets',
+                icon: 'pets',
+            },
+            {
+                path: '/owner/vaccines',
+                roles: ['pet_owner'],
+                component: OwnerVaccines,
+                label: 'Vaccinations',
+                icon: 'syringe',
+            },
+            {
+                path: '/owner/profile',
+                roles: ['pet_owner'],
+                component: OwnerProfile,
+                label: 'Profile',
+                icon: 'user',
+            },
+        ],
+    },
+];
