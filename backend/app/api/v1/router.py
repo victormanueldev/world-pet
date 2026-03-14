@@ -2,7 +2,7 @@
 
 from fastapi import APIRouter
 
-from app.api.v1.endpoints import auth, health, tenants, users
+from app.api.v1.endpoints import auth, health, pets, tenants, users
 
 api_router = APIRouter()
 
@@ -17,3 +17,6 @@ api_router.include_router(tenants.router, prefix="", tags=["tenants"])
 
 # User endpoints (require tenant context)
 api_router.include_router(users.router, prefix="", tags=["users"])
+
+# Pet endpoints (require tenant context)
+api_router.include_router(pets.router, prefix="", tags=["pets"])

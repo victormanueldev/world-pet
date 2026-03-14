@@ -278,3 +278,43 @@ async def get_token_payload(
             detail="Invalid token",
             headers={"WWW-Authenticate": "Bearer"},
         ) from e
+
+
+async def get_current_tenant_context(
+    current_user: Annotated[User, Depends(get_current_active_user)],
+    tenant_id: Annotated[int, Depends(get_authenticated_tenant_id)],
+    db: Annotated[AsyncSession, Depends(get_db)],
+) -> dict:
+    """Get current user's tenant context including role and user ID.
+
+    Args:
+        current_user: The current authenticated active user.
+        tenant_id: The authenticated tenant ID.
+        db: Database session.
+
+    Returns:
+        Dictionary with tenant_id, user_id, and role.
+
+    Raises:
+        HTTPException: If user doesn't have access to tenant.
+    """
+    # Get user's role in the current tenant
+    result = await db.execute(
+        select(UserTenant).where(
+            UserTenant.user_id == current_user.id,
+            UserTenant.tenant_id == tenant_id,
+        )
+    )
+    user_tenant = result.scalar_one_or_none()
+
+    if user_tenant is None:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Tenant access denied",
+        )
+
+    return {
+        "tenant_id": tenant_id,
+        "user_id": current_user.id,
+        "role": user_tenant.role,
+    }

@@ -10,71 +10,71 @@
 
 ## 2. Backend - Database Schema
 
-- [ ] 2.1 Create Alembic migration for pets table with all fields (id, tenant_id, owner_id, name, species, breed, sex, birth_date, weight, sterilized, status, photo_url, photo_key, adopted_at, deleted_at, created_at, updated_at, created_by, updated_by)
-- [ ] 2.2 Add foreign key constraints (tenant_id → tenants, owner_id → users nullable)
-- [ ] 2.3 Add CHECK constraints (status enum, sex enum, species enum, status+owner_id consistency)
-- [ ] 2.4 Add indexes (tenant_id, owner_id, status, tenant_id+status, name full-text search)
-- [ ] 2.5 Add partial indexes for soft delete (WHERE deleted_at IS NULL)
-- [ ] 2.6 Create trigger for updated_at auto-update
-- [ ] 2.7 Run migration on development database
+- [x] 2.1 Create Alembic migration for pets table with all fields (id, tenant_id, owner_id, name, species, breed, sex, birth_date, weight, sterilized, status, photo_url, photo_key, adopted_at, deleted_at, created_at, updated_at, created_by, updated_by)
+- [x] 2.2 Add foreign key constraints (tenant_id → tenants, owner_id → users nullable)
+- [x] 2.3 Add CHECK constraints (status enum, sex enum, species enum, status+owner_id consistency)
+- [x] 2.4 Add indexes (tenant_id, owner_id, status, tenant_id+status, name full-text search)
+- [x] 2.5 Add partial indexes for soft delete (WHERE deleted_at IS NULL)
+- [x] 2.6 Create trigger for updated_at auto-update
+- [x] 2.7 Run migration on development database
 - [ ] 2.8 Verify schema with sample data
 
 ## 3. Backend - Models and Schemas
 
-- [ ] 3.1 Create Pet SQLAlchemy model (app/models/pet.py) with all fields and relationships
-- [ ] 3.2 Add relationship to User model (owner relationship)
-- [ ] 3.3 Add relationship to Tenant model
-- [ ] 3.4 Create Pydantic schemas (app/schemas/pet.py): PetBase, PetCreate, PetUpdate, PetInDB, PetResponse
-- [ ] 3.5 Create enum classes for Species, Sex, PetStatus
-- [ ] 3.6 Create PresignedUploadRequest and PresignedUploadResponse schemas
-- [ ] 3.7 Create PetFilters schema for list endpoint query parameters
-- [ ] 3.8 Create PaginatedPetResponse schema
+- [x] 3.1 Create Pet SQLAlchemy model (app/models/pet.py) with all fields and relationships
+- [x] 3.2 Add relationship to User model (owner relationship)
+- [x] 3.3 Add relationship to Tenant model
+- [x] 3.4 Create Pydantic schemas (app/schemas/pet.py): PetBase, PetCreate, PetUpdate, PetInDB, PetResponse
+- [x] 3.5 Create enum classes for Species, Sex, PetStatus
+- [x] 3.6 Create PresignedUploadRequest and PresignedUploadResponse schemas
+- [x] 3.7 Create PetFilters schema for list endpoint query parameters
+- [x] 3.8 Create PaginatedPetResponse schema
 
 ## 4. Backend - S3 Service
 
-- [ ] 4.1 Create S3Service class (app/services/s3_service.py)
-- [ ] 4.2 Implement generate_upload_presigned_url method (with size/type validation)
-- [ ] 4.3 Implement verify_object_exists method (HeadObject)
-- [ ] 4.4 Implement delete_object method
-- [ ] 4.5 Implement tag_object method (for deleted/orphaned tags)
-- [ ] 4.6 Add error handling for S3 client exceptions
+- [x] 4.1 Create S3Service class (app/services/s3_service.py)
+- [x] 4.2 Implement generate_upload_presigned_url method (with size/type validation)
+- [x] 4.3 Implement verify_object_exists method (HeadObject)
+- [x] 4.4 Implement delete_object method
+- [x] 4.5 Implement tag_object method (for deleted/orphaned tags)
+- [x] 4.6 Add error handling for S3 client exceptions
 - [ ] 4.7 Write unit tests for S3Service
 
 ## 5. Backend - Pet Service
 
-- [ ] 5.1 Create PetService class (app/services/pet_service.py)
-- [ ] 5.2 Implement create_pet method with RBAC (owner auto-set for users, optional for admins)
-- [ ] 5.3 Implement list_pets method with role-based filtering (owners see own, admins see all)
-- [ ] 5.4 Implement get_pet method with RBAC validation
-- [ ] 5.5 Implement update_pet method with RBAC and photo replacement logic
-- [ ] 5.6 Implement soft_delete_pet method (admin only, tag S3 photos)
-- [ ] 5.7 Implement adopt_pet method (admin assigns owner, sets status, records adopted_at)
-- [ ] 5.8 Add photo verification in create/update methods (verify S3 object exists)
-- [ ] 5.9 Add tenant_id filtering to all queries
-- [ ] 5.10 Add audit trail fields (created_by, updated_by) to all operations
+- [x] 5.1 Create PetService class (app/services/pet_service.py)
+- [x] 5.2 Implement create_pet method with RBAC (owner auto-set for users, optional for admins)
+- [x] 5.3 Implement list_pets method with role-based filtering (owners see own, admins see all)
+- [x] 5.4 Implement get_pet method with RBAC validation
+- [x] 5.5 Implement update_pet method with RBAC and photo replacement logic
+- [x] 5.6 Implement soft_delete_pet method (admin only, tag S3 photos)
+- [x] 5.7 Implement adopt_pet method (admin assigns owner, sets status, records adopted_at)
+- [x] 5.8 Add photo verification in create/update methods (verify S3 object exists)
+- [x] 5.9 Add tenant_id filtering to all queries
+- [x] 5.10 Add audit trail fields (created_by, updated_by) to all operations
 - [ ] 5.11 Write unit tests for PetService (all RBAC scenarios, adoption workflow, photo handling)
 
 ## 6. Backend - API Endpoints
 
-- [ ] 6.1 Create pets router (app/api/v1/endpoints/pets.py)
-- [ ] 6.2 Implement POST /v1/pets/upload-url endpoint (generate presigned S3 URL)
-- [ ] 6.3 Implement POST /v1/pets endpoint (create pet)
-- [ ] 6.4 Implement GET /v1/pets endpoint (list with filters, pagination, RBAC)
-- [ ] 6.5 Implement GET /v1/pets/{pet_id} endpoint (retrieve single pet with RBAC)
-- [ ] 6.6 Implement PUT /v1/pets/{pet_id} endpoint (update pet with RBAC)
-- [ ] 6.7 Implement PATCH /v1/pets/{pet_id}/adopt endpoint (admin-only adoption)
-- [ ] 6.8 Implement DELETE /v1/pets/{pet_id} endpoint (admin-only soft delete)
-- [ ] 6.9 Add dependency injection for PetService and S3Service
-- [ ] 6.10 Add proper error handling (404, 403, 400, 422, 503)
-- [ ] 6.11 Register pets router in main app
+- [x] 6.1 Create pets router (app/api/v1/endpoints/pets.py)
+- [x] 6.2 Implement POST /v1/pets/upload-url endpoint (generate presigned S3 URL)
+- [x] 6.3 Implement POST /v1/pets endpoint (create pet)
+- [x] 6.4 Implement GET /v1/pets endpoint (list with filters, pagination, RBAC)
+- [x] 6.5 Implement GET /v1/pets/{pet_id} endpoint (retrieve single pet with RBAC)
+- [x] 6.6 Implement PUT /v1/pets/{pet_id} endpoint (update pet with RBAC)
+- [x] 6.7 Implement PATCH /v1/pets/{pet_id}/adopt endpoint (admin-only adoption)
+- [x] 6.8 Implement DELETE /v1/pets/{pet_id} endpoint (admin-only soft delete)
+- [x] 6.9 Add dependency injection for PetService and S3Service
+- [x] 6.10 Add proper error handling (404, 403, 400, 422, 503)
+- [x] 6.11 Register pets router in main app
 - [ ] 6.12 Write API integration tests (all endpoints, RBAC, tenant isolation)
 
 ## 7. Backend - Configuration and Dependencies
 
-- [ ] 7.1 Add boto3 to pyproject.toml dependencies
-- [ ] 7.2 Update app/core/config.py with S3 settings (bucket name, AWS region)
-- [ ] 7.3 Add AWS credential loading (from env or IAM role)
-- [ ] 7.4 Install dependencies (uv sync)
+- [x] 7.1 Add boto3 to pyproject.toml dependencies
+- [x] 7.2 Update app/core/config.py with S3 settings (bucket name, AWS region)
+- [x] 7.3 Add AWS credential loading (from env or IAM role)
+- [x] 7.4 Install dependencies (uv sync)
 
 ## 8. Backend - Testing
 
