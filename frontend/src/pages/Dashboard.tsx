@@ -1,14 +1,19 @@
 /**
- * Dashboard page — placeholder landing page.
+ * Dashboard page — shared landing page for all users.
  *
- * Will be replaced with real content once modules are built.
+ * Shows role-specific content based on user's role.
+ * Admin users see system-wide stats, pet owners see their pet overview.
  */
 import { motion } from "framer-motion";
-import { PawPrint } from "lucide-react";
+import { PawPrint, Calendar, Syringe, Settings } from "lucide-react";
 import { staggerContainer, staggerItem } from "@/lib/animations";
 import { PageHeader } from "@/components/layout/PageHeader";
+import { useCanAccess } from "@/hooks/useCanAccess";
 
 export function Dashboard() {
+    const isAdmin = useCanAccess(['admin']);
+    const isPetOwner = useCanAccess(['pet_owner']);
+
     return (
         <motion.div
             variants={staggerContainer}
@@ -17,27 +22,110 @@ export function Dashboard() {
         >
             <PageHeader
                 title="Dashboard"
-                subtitle="Bienvenido a World Pet — tu plataforma de gestión veterinaria."
+                subtitle="Welcome to World Pet — your veterinary management platform."
             />
 
-            {/* Placeholder stat cards */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                {["Mascotas", "Citas pendientes", "Vacunas próximas"].map((label) => (
-                    <motion.div
-                        key={label}
-                        variants={staggerItem}
-                        className="glass-card p-6 flex items-center gap-4"
-                    >
-                        <div className="w-10 h-10 rounded-lg bg-brand-subtle flex items-center justify-center">
-                            <PawPrint size={18} className="text-brand-light" />
-                        </div>
-                        <div>
-                            <p className="text-2xl font-semibold text-white">—</p>
-                            <p className="text-sm text-text-secondary">{label}</p>
-                        </div>
-                    </motion.div>
-                ))}
-            </div>
+            {/* Admin-specific widgets */}
+            {isAdmin && (
+                <div className="space-y-6">
+                    <h3 className="text-lg font-semibold text-white">System Overview</h3>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                        <motion.div
+                            variants={staggerItem}
+                            className="glass-card p-6 flex items-center gap-4"
+                        >
+                            <div className="w-10 h-10 rounded-lg bg-brand-subtle flex items-center justify-center">
+                                <PawPrint size={18} className="text-brand-light" />
+                            </div>
+                            <div>
+                                <p className="text-2xl font-semibold text-white">—</p>
+                                <p className="text-sm text-text-secondary">Total Pets</p>
+                            </div>
+                        </motion.div>
+                        <motion.div
+                            variants={staggerItem}
+                            className="glass-card p-6 flex items-center gap-4"
+                        >
+                            <div className="w-10 h-10 rounded-lg bg-brand-subtle flex items-center justify-center">
+                                <Calendar size={18} className="text-brand-light" />
+                            </div>
+                            <div>
+                                <p className="text-2xl font-semibold text-white">—</p>
+                                <p className="text-sm text-text-secondary">Appointments Today</p>
+                            </div>
+                        </motion.div>
+                        <motion.div
+                            variants={staggerItem}
+                            className="glass-card p-6 flex items-center gap-4"
+                        >
+                            <div className="w-10 h-10 rounded-lg bg-brand-subtle flex items-center justify-center">
+                                <Syringe size={18} className="text-brand-light" />
+                            </div>
+                            <div>
+                                <p className="text-2xl font-semibold text-white">—</p>
+                                <p className="text-sm text-text-secondary">Vaccines Due</p>
+                            </div>
+                        </motion.div>
+                        <motion.div
+                            variants={staggerItem}
+                            className="glass-card p-6 flex items-center gap-4"
+                        >
+                            <div className="w-10 h-10 rounded-lg bg-brand-subtle flex items-center justify-center">
+                                <Settings size={18} className="text-brand-light" />
+                            </div>
+                            <div>
+                                <p className="text-2xl font-semibold text-white">—</p>
+                                <p className="text-sm text-text-secondary">Active Users</p>
+                            </div>
+                        </motion.div>
+                    </div>
+                </div>
+            )}
+
+            {/* Pet owner-specific widgets */}
+            {isPetOwner && (
+                <div className="space-y-6">
+                    <h3 className="text-lg font-semibold text-white">My Pets Overview</h3>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                        <motion.div
+                            variants={staggerItem}
+                            className="glass-card p-6 flex items-center gap-4"
+                        >
+                            <div className="w-10 h-10 rounded-lg bg-brand-subtle flex items-center justify-center">
+                                <PawPrint size={18} className="text-brand-light" />
+                            </div>
+                            <div>
+                                <p className="text-2xl font-semibold text-white">—</p>
+                                <p className="text-sm text-text-secondary">My Pets</p>
+                            </div>
+                        </motion.div>
+                        <motion.div
+                            variants={staggerItem}
+                            className="glass-card p-6 flex items-center gap-4"
+                        >
+                            <div className="w-10 h-10 rounded-lg bg-brand-subtle flex items-center justify-center">
+                                <Calendar size={18} className="text-brand-light" />
+                            </div>
+                            <div>
+                                <p className="text-2xl font-semibold text-white">—</p>
+                                <p className="text-sm text-text-secondary">Upcoming Appointments</p>
+                            </div>
+                        </motion.div>
+                        <motion.div
+                            variants={staggerItem}
+                            className="glass-card p-6 flex items-center gap-4"
+                        >
+                            <div className="w-10 h-10 rounded-lg bg-brand-subtle flex items-center justify-center">
+                                <Syringe size={18} className="text-brand-light" />
+                            </div>
+                            <div>
+                                <p className="text-2xl font-semibold text-white">—</p>
+                                <p className="text-sm text-text-secondary">Vaccines Due</p>
+                            </div>
+                        </motion.div>
+                    </div>
+                </div>
+            )}
         </motion.div>
     );
 }
