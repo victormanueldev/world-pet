@@ -181,9 +181,9 @@ class TestUpdateLastLogin:
         mock_user = MagicMock(spec=User)
         mock_user.last_login = None
 
-        before = datetime.now(UTC)
+        before = datetime.now(UTC).replace(tzinfo=None)
         await update_last_login(db, mock_user)
-        after = datetime.now(UTC)
+        after = datetime.now(UTC).replace(tzinfo=None)
 
         # Verify timestamp was set
         assert mock_user.last_login is not None

@@ -73,9 +73,8 @@ export function TenantSwitcher() {
                 </span>
                 <ChevronDown
                     size={16}
-                    className={`text-text-muted transition-transform duration-200 shrink-0 ${
-                        isOpen ? 'rotate-180' : ''
-                    }`}
+                    className={`text-text-muted transition-transform duration-200 shrink-0 ${isOpen ? 'rotate-180' : ''
+                        }`}
                 />
             </motion.button>
 
@@ -94,11 +93,10 @@ export function TenantSwitcher() {
                             <button
                                 key={tenantItem.id}
                                 onClick={() => handleTenantSwitch(tenantItem.slug)}
-                                className={`w-full px-3 py-2 text-left text-sm transition-colors ${
-                                    currentTenant?.id === tenantItem.id
-                                        ? 'text-brand-light bg-brand-subtle'
-                                        : 'text-white hover:bg-white/5'
-                                }`}
+                                className={`w-full px-3 py-2 text-left text-sm transition-colors ${currentTenant?.id === tenantItem.id
+                                    ? 'text-brand-light bg-brand-subtle'
+                                    : 'text-white hover:bg-white/5'
+                                    }`}
                             >
                                 <p className="font-medium truncate">{tenantItem.name}</p>
                                 <p className="text-xs text-text-muted">Rol: {tenantItem.role}</p>

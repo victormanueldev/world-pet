@@ -12,7 +12,7 @@ import { useCanAccess } from "@/hooks/useCanAccess";
 
 export function Dashboard() {
     const isAdmin = useCanAccess(['admin']);
-    const isPetOwner = useCanAccess(['pet_owner']);
+    const isUser = useCanAccess(['user']);
 
     return (
         <motion.div
@@ -82,8 +82,8 @@ export function Dashboard() {
                 </div>
             )}
 
-            {/* Pet owner-specific widgets */}
-            {isPetOwner && (
+            {/* User/Pet owner-specific widgets */}
+            {isUser && (
                 <div className="space-y-6">
                     <h3 className="text-lg font-semibold text-white">My Pets Overview</h3>
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">

@@ -23,22 +23,22 @@ describe('useCanAccess', () => {
         expect(result.current).toBe(true);
     });
 
-    it('returns true when user has required pet_owner role', () => {
+    it('returns true when user has required user role', () => {
         vi.spyOn(TenantContext, 'useTenant').mockReturnValue({
-            tenant: { role: 'pet_owner' } as any,
+            tenant: { role: 'user' } as any,
             isLoading: false,
             isValidating: false,
             error: null,
             refreshTenant: vi.fn(),
         });
 
-        const { result } = renderHook(() => useCanAccess(['pet_owner']));
+        const { result } = renderHook(() => useCanAccess(['user']));
         expect(result.current).toBe(true);
     });
 
     it('returns false when user lacks required role', () => {
         vi.spyOn(TenantContext, 'useTenant').mockReturnValue({
-            tenant: { role: 'pet_owner' } as any,
+            tenant: { role: 'user' } as any,
             isLoading: false,
             isValidating: false,
             error: null,
@@ -51,14 +51,14 @@ describe('useCanAccess', () => {
 
     it('returns true when user has one of multiple allowed roles', () => {
         vi.spyOn(TenantContext, 'useTenant').mockReturnValue({
-            tenant: { role: 'pet_owner' } as any,
+            tenant: { role: 'user' } as any,
             isLoading: false,
             isValidating: false,
             error: null,
             refreshTenant: vi.fn(),
         });
 
-        const { result } = renderHook(() => useCanAccess(['admin', 'pet_owner']));
+        const { result } = renderHook(() => useCanAccess(['admin', 'user']));
         expect(result.current).toBe(true);
     });
 
