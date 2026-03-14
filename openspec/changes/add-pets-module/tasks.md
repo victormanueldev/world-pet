@@ -116,14 +116,14 @@
 
 ## 11. Frontend - Owner Pages
 
-- [ ] 11.1 Create PetsPage (src/pages/owner/pets/PetsPage.tsx) - list owner's pets
-- [ ] 11.2 Create AddPetPage (src/pages/owner/pets/AddPetPage.tsx) - create new pet with form
-- [ ] 11.3 Create EditPetPage (src/pages/owner/pets/EditPetPage.tsx) - edit existing pet
-- [ ] 11.4 Create PetDetailPage (src/pages/owner/pets/PetDetailPage.tsx) - view pet details with tabs
-- [ ] 11.5 Add empty state UI for no pets
-- [ ] 11.6 Add loading states and skeletons
-- [ ] 11.7 Add error handling and retry logic
-- [ ] 11.8 Add success/error toast notifications
+- [x] 11.1 Create PetsPage (src/pages/owner/pets/PetsPage.tsx) - list owner's pets
+- [x] 11.2 Create AddPetPage (src/pages/owner/pets/AddPetPage.tsx) - create new pet with form
+- [x] 11.3 Create EditPetPage (src/pages/owner/pets/EditPetPage.tsx) - edit existing pet
+- [x] 11.4 Create PetDetailPage (src/pages/owner/pets/PetDetailPage.tsx) - view pet details with tabs
+- [x] 11.5 Add empty state UI for no pets
+- [x] 11.6 Add loading states and skeletons
+- [x] 11.7 Add error handling and retry logic
+- [x] 11.8 Add success/error toast notifications
 
 ## 12. Frontend - Admin Pages
 
