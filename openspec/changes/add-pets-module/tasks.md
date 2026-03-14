@@ -89,22 +89,22 @@
 
 ## 9. Frontend - Types and Services
 
-- [ ] 9.1 Create TypeScript types (src/types/pet.ts): Pet, PetCreate, PetUpdate, PetSpecies, PetSex, PetStatus
-- [ ] 9.2 Create PresignedUploadResponse type
-- [ ] 9.3 Create pet API service (src/services/pets.ts)
-- [ ] 9.4 Implement getUploadUrl method
-- [ ] 9.5 Implement uploadToS3 method (direct upload with presigned URL)
-- [ ] 9.6 Implement createPet method
-- [ ] 9.7 Implement listPets method (with filter parameters)
-- [ ] 9.8 Implement getPet method
-- [ ] 9.9 Implement updatePet method
-- [ ] 9.10 Implement adoptPet method
-- [ ] 9.11 Implement deletePet method
-- [ ] 9.12 Add error handling and type safety
+- [x] 9.1 Create TypeScript types (src/types/pet.ts): Pet, PetCreate, PetUpdate, PetSpecies, PetSex, PetStatus
+- [x] 9.2 Create PresignedUploadResponse type
+- [x] 9.3 Create pet API service (src/services/pets.ts)
+- [x] 9.4 Implement getUploadUrl method
+- [x] 9.5 Implement uploadToS3 method (direct upload with presigned URL)
+- [x] 9.6 Implement createPet method
+- [x] 9.7 Implement listPets method (with filter parameters)
+- [x] 9.8 Implement getPet method
+- [x] 9.9 Implement updatePet method
+- [x] 9.10 Implement adoptPet method
+- [x] 9.11 Implement deletePet method
+- [x] 9.12 Add error handling and type safety
 
 ## 10. Frontend - Reusable Components
 
-- [ ] 10.1 Create PhotoUpload component (src/components/pets/PhotoUpload.tsx) with drag-drop, preview, validation
+- [x] 10.1 Create PhotoUpload component (src/components/pets/PhotoUpload.tsx) with drag-drop, preview, validation
 - [ ] 10.2 Create PetForm component (src/components/pets/PetForm.tsx) with all fields, validation, photo upload
 - [ ] 10.3 Create PetCard component (src/components/pets/PetCard.tsx) for grid/list display
 - [ ] 10.4 Create PetFilters component (src/components/pets/PetFilters.tsx) for admin search/filter UI
